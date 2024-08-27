@@ -50,18 +50,24 @@ def printResults(timechart):
 		print('*'*25)
 
 def printHelp():
-	print('Enter `list` to view current clients.')
-	print('Enter `h` or `help` to view help information.')
-	print('Enter `view` to view current time values for clients.')
-	print('Enter `q` to finish the day and summarize the times.')
+	print('`list` \t\t View current clients.')
+	print('`view` \t\t View current time values for clients.')
+	print('`new` \t\t Enter a new Client into your client list.')
+	print('`del` \t\t Delete Client that is not longer needed.')
+	print('`off` \t\t Check which keys and phrases are not permited to be Client Keys. Spoiler alert... its pretty much all the things you see here')
+	print('`h` or `help` \t View help information.')
+	print('`q` \t\t Finish the day and summarize the times.')
 
-def createClients(timechart, value, keys):
+def createClients(timechart, value, keys, offLimits):
 	name = input('Enter Cleint Name: ')
 	key = input('Enter inputKey for this cleint: ')
 
 	if key in keys:
 		print('#'*20)
 		print('Client with that key already exists. Please eneter a new key. \nType `list` to view all current clients.')
+	elif key in offLimits:
+		print('#'*20)
+		print('That key is off limit. To view a list of off limit keys, type `off`.')
 	else:
 		timechart.append(client(len(timechart) +1,0,False,0,key,name))
 		print('New Cleint added')
@@ -86,17 +92,21 @@ def getKeysList(timechart):
 		keyList.append(x.inputKey)
 	return keyList
 
+def printOffLimits(offLimits):
+	print('#'*20)
+	print(offLimits)
+
 def main():
 	print('Hello There. \nWelcome to the Time Tracker. \nThe Goal is to better track your billing hours. \nTo see more information input h.')
 	value = ''
 	timechart = []
 	timechart.append(client(1,0,False,0,'1','Admin'))
 	keys = []
+	offLimits = ['h', 'help', 'new', 'del', 'list', 'view', 'q', 'off']
 
 	while value.lower() != 'q':
 		value = input()
 		keys = getKeysList(timechart)
-		print('keys', keys)
 
 		for x in timechart:
 			if x.running is True and x.inputKey in keys:
@@ -108,7 +118,7 @@ def main():
 			printHelp()
 
 		if value.lower() == 'new':
-			timechart = createClients(timechart, value, keys)
+			timechart = createClients(timechart, value, keys, offLimits)
 
 		if value.lower() == 'del':
 			timechart = removeClient(timechart, value, keys)
@@ -118,6 +128,9 @@ def main():
 
 		if value.lower() == 'view':
 			printResults(timechart)
+
+		if value.lower() == 'off':
+			printOffLimits(offLimits)
 
 	timechart = endTimer(timechart)
 	printResults(timechart)
