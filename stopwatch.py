@@ -78,6 +78,7 @@ def removeClient(timechart, value, keys):
 	for x in timechart:
 		if x.inputKey == key:
 			timechart.remove(x)
+			break
 	return timechart
 
 def printCleints(timechart):
@@ -85,6 +86,7 @@ def printCleints(timechart):
 		print('Client', x.name)
 		print('\tid', x.id)
 		print('\tkey', x.inputKey)
+		print('\tcurrently running', x.running)
 
 def getKeysList(timechart):
 	keyList = []
@@ -109,7 +111,7 @@ def main():
 		keys = getKeysList(timechart)
 
 		for x in timechart:
-			if x.running is True and x.inputKey in keys:
+			if x.running is True and x.inputKey in keys and value.lower() != x.inputKey and value.lower() in keys:
 				x = stopTimer(x)
 			if x.inputKey is value:
 				x = startTimer(x)
@@ -131,6 +133,9 @@ def main():
 
 		if value.lower() == 'off':
 			printOffLimits(offLimits)
+
+		if(value.lower() not in offLimits and value.lower() not in keys):
+			print('Value not recognized. Please try entering a new value.\nIf you need help, type `h` or `help`.')
 
 	timechart = endTimer(timechart)
 	printResults(timechart)
