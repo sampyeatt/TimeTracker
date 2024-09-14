@@ -1,6 +1,9 @@
 import time
 import math
 import string
+import os
+from string import Template
+from pathlib import Path
 
 class client:
 	def __init__(self,id,curtime,running,total,inputKey,name):
@@ -52,16 +55,19 @@ def printResults(timechart):
 def printHelp():
 	print('`list` \t\t View current clients.')
 	print('`view` \t\t View current time values for clients.')
-	print('`new` \t\t Enter a new Client into your client list.')
+	print('`new <clientName> <key>` \t\t Enter a new Client into your client list.')
 	print('`del` \t\t Delete Client that is not longer needed.')
 	print('`off` \t\t Check which keys and phrases are not permited to be Client Keys. Spoiler alert... its pretty much all the things you see here')
 	print('`h` or `help` \t View help information.')
 	print('`q` \t\t Finish the day and summarize the times.')
 
-def createClients(timechart, value, keys, offLimits):
-	name = input('Enter Cleint Name: ')
-	key = input('Enter inputKey for this cleint: ')
+def createClients(timechart, values, keys, offLimits):
+	if len(values) < 3:
+		print('Please make sure to incldue all values. Type `h` or `help` for more information.')
+		return
 
+	name = values[1]
+	key = values[2]
 	if key in keys:
 		print('#'*20)
 		print('Client with that key already exists. Please eneter a new key. \nType `list` to view all current clients.')
@@ -98,16 +104,40 @@ def printOffLimits(offLimits):
 	print('#'*20)
 	print(offLimits)
 
+def writeToNewFile(file):
+	file.write('Admin:1\nCPE:2\n')
+	return file
+
+def saveFile(timechart):
+	with open('clients.txt', 'w') as f:
+		listToAppend = []
+		for x in timechart:
+			temp_obj = Template('$name:$key')
+			listToAppend.append(temp_obj.substitute(name=x.name, key=x.inputKey))
+		f.write('\n'.join(listToAppend))
+
+def createTimechart(timechart, name, key):
+	timechart.append(client(len(timechart) +1,0,False,0,key.rstrip(),name.rstrip()))
+	return timechart
+
 def main():
 	print('Hello There. \nWelcome to the Time Tracker. \nThe Goal is to better track your billing hours. \nTo see more information input h.')
 	value = ''
 	timechart = []
-	timechart.append(client(1,0,False,0,'1','Admin'))
+
 	keys = []
 	offLimits = ['h', 'help', 'new', 'del', 'list', 'view', 'q', 'off']
+	if Path('clients.txt').exists():
+		with open('clients.txt', 'r') as file:
+			for line in file.readlines():
+				x, y = line.split(':')
+				timechart = createTimechart(timechart, x, y)
+	else:
+		timechart.append(client(1,0,False,0,'1','Admin'))
 
 	while value.lower() != 'q':
-		value = input()
+		splitInput = input().split(' ')
+		value = splitInput[0]
 		keys = getKeysList(timechart)
 
 		for x in timechart:
@@ -120,7 +150,7 @@ def main():
 			printHelp()
 
 		if value.lower() == 'new':
-			timechart = createClients(timechart, value, keys, offLimits)
+			timechart = createClients(timechart, splitInput, keys, offLimits)
 
 		if value.lower() == 'del':
 			timechart = removeClient(timechart, value, keys)
@@ -137,6 +167,9 @@ def main():
 		if(value.lower() not in offLimits and value.lower() not in keys):
 			print('Value not recognized. Please try entering a new value.\nIf you need help, type `h` or `help`.')
 
+	save = input('Would you like to save current client list for tomorrow? [y/n]')
+	if save.lower() == 'y':
+		saveFile(timechart)
 	timechart = endTimer(timechart)
 	printResults(timechart)
 
