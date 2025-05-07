@@ -116,6 +116,9 @@ def createTimechart(timechart, name, key):
 	timechart.append(client(len(timechart) +1,0,False,0,key.rstrip(),name.rstrip()))
 	return timechart
 
+def sortFunc(cl):
+	return int(cl.inputKey)
+
 def main():
 	print('Hello There. \nWelcome to the Time Tracker. \nThe Goal is to better track your billing hours. \nTo see more information input h.')
 	value = ''
@@ -127,7 +130,8 @@ def main():
 		with open('clients.txt', 'r') as file:
 			for line in file.readlines():
 				x, y = line.split(':')
-				timechart = createTimechart(timechart, x, y)
+				timechart = sorted(createTimechart(timechart, x, y), key=sortFunc)
+
 	else:
 		timechart.append(client(1,0,False,0,'1','Admin'))
 	printCleints(timechart)
