@@ -16,7 +16,6 @@ class client:
 
 def startTimer(x):
 	# start new timer
-	print('CurrentTotal',x.total)
 	x.curtime = time.time()
 	x.running = True
 	return x
@@ -25,7 +24,6 @@ def stopTimer(x):
 	# find the currently running timer and record time and stop it
 	print('StopTime', x.id)
 	x.total += round((time.time()-x.curtime), 2)
-	print('total', x.total)
 	x.running = False
 	x.curtime = 0
 	return x
@@ -90,9 +88,7 @@ def removeClient(timechart, value, keys):
 def printCleints(timechart):
 	for x in timechart:
 		print('Client', x.name)
-		print('\tid', x.id)
 		print('\tkey', x.inputKey)
-		print('\tcurrently running', x.running)
 
 def getKeysList(timechart):
 	keyList = []
@@ -134,17 +130,19 @@ def main():
 				timechart = createTimechart(timechart, x, y)
 	else:
 		timechart.append(client(1,0,False,0,'1','Admin'))
-
-	while value.lower() != 'q':
+	printCleints(timechart)
+	while value.lower() != '/':
 		splitInput = input().split(' ')
 		value = splitInput[0]
 		keys = getKeysList(timechart)
 
-		for x in timechart:
-			if x.running is True and x.inputKey in keys and value.lower() != x.inputKey and value.lower() in keys:
-				x = stopTimer(x)
-			if x.inputKey is value:
-				x = startTimer(x)
+
+		if value in keys:
+			for x in timechart:
+				if x.running is True and x.inputKey in keys and int(value) != int(x.inputKey):
+					x = stopTimer(x)
+				if int(x.inputKey) is int(value):
+					x = startTimer(x)
 
 		if value == 'h' or value == 'help':
 			printHelp()
@@ -167,8 +165,8 @@ def main():
 		if(value.lower() not in offLimits and value.lower() not in keys):
 			print('Value not recognized. Please try entering a new value.\nIf you need help, type `h` or `help`.')
 
-	save = input('Would you like to save current client list for tomorrow? [y/n]')
-	if save.lower() == 'y':
+	save = input('Would you like to save current client list for tomorrow? [y/n] or [+/-]')
+	if save.lower() == 'y' or save.lower() == '+':
 		saveFile(timechart)
 	timechart = endTimer(timechart)
 	printResults(timechart)
