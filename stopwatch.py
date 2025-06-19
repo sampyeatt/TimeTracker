@@ -152,7 +152,7 @@ def main():
 			printHelp()
 
 		if value.lower() == 'new':
-			timechart = createClients(timechart, splitInput, keys, offLimits)
+			timechart = sorted(createClients(timechart, splitInput, keys, offLimits), key=sortFunc)
 
 		if value.lower() == 'del':
 			timechart = removeClient(timechart, value, keys)
