@@ -14,7 +14,7 @@ class client:
 		self.inputKey = inputKey
 		self.name = name
 
-def startTimer(x):
+def startTmer(x):
 	# start new timer
 	x.curtime = time.time()
 	x.running = True
