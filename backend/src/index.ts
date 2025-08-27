@@ -1,6 +1,7 @@
 import express from 'express'
-import {Request, Response} from 'express'
+import './database/index'
 import timeRoute from './routes/time.route'
+import {Request, Response} from 'express'
 
 const app = express()
 const port: number = 3001

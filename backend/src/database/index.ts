@@ -1,9 +1,5 @@
-import { connection } from "./connection"
+import {connection} from './connection'
 
-connection.sync({
-    logging: false,
-    alter: true,
-    force: true,
-})
+connection.sync()
 
-export { connection }
+export {connection}
