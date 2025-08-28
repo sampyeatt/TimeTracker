@@ -1,5 +1,12 @@
 import {Request, Response} from 'express'
-import {addNewTime, getTimeByTimeId, getTimeByUserId, updateTime} from '../services/time.service'
+import {
+    addNewTime,
+    deleteTime,
+    getRunningTime,
+    getTimeByTimeId,
+    getTimeByUserId,
+    updateTime
+} from '../services/time.service'
 import z from 'zod'
 
 export const getTimeByUserIdController = async (req: Request, res: Response) => {
@@ -18,7 +25,7 @@ export const addNewTimeController = async (req: Request, res: Response) => {
     const schema = z.object({
         client_name: z.string().min(1),
         key: z.string().min(1),
-        userId: z.number().min(1),
+        userId: z.number().min(1)
     })
     const schemaValidation = schema.safeParse(req.body)
     if (!schemaValidation.success) return res.status(400).json({
@@ -32,8 +39,8 @@ export const addNewTimeController = async (req: Request, res: Response) => {
 
 export const updateTimeController = async (req: Request, res: Response) => {
     const schema = z.object({
-        id: z.number().min(1),
-        useId: z.number().min(1)
+        id: z.number(),
+        userId: z.number()
     })
     const schemaValidation = schema.safeParse(req.body)
     if (!schemaValidation.success) return res.status(400).json({
@@ -44,24 +51,51 @@ export const updateTimeController = async (req: Request, res: Response) => {
 
     const timeData = await getTimeByTimeId(id)
     if (!timeData) return res.status(400).json({message: 'Time not found'})
-    const time = timeData[0]
+    let time = timeData[0]
     if (!time) return res.status(400).json({message: 'Time not found'})
     if (time.userId !== userId) return res.status(403).json({message: 'You are not authorized to update this time'})
-
-    if(!time.running) { // START TIME
+    time = time.toJSON()
+    if (!time.running) { // START TIME
         time.current_time = Date.now()
         time.running = 1
-        await updateTime(time)
+        const updated = await updateTime(time)
+        if (!updated) return res.status(400).json({message: 'Time not updated', errors: updated})
         res.json({message: 'Time started'})
     } else if (time.running) { // STOP TIME
         time.total_time = (Date.now() - time.current_time)
         time.running = 0
         time.current_time = 0
-        await updateTime(time)
+        const updated = await updateTime(time)
+        if (!updated) return res.status(400).json({message: 'Time not updated', errors: updated})
         res.json({message: 'Time stopped'})
     } else {
         res.json({message: `Something went wrong... very wrong. running = ${time.running} for id = ${id} and client_name = ${time.client_name}`})
     }
+}
 
+export const deleteTimeController = async (req: Request, res: Response) => {
+    const timeId = req.params.timeId
+    if (!timeId) return res.status(400).send('Time ID is required')
+    await  deleteTime(+timeId)
+    res.json({message: 'Time deleted'})
+}
 
+export const stopAllTimeController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        userId: z.number()
+    })
+    const schemaValidation = schema.safeParse(req.body)
+    if (!schemaValidation.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: schemaValidation.error.issues
+    })
+    const {userId} = req.body
+    const times = (await getRunningTime(userId)).map(time => time.toJSON())
+    times.forEach(async (time) => {
+        time.total_time += (Date.now() - time.current_time)
+        time.running = 0
+        time.current_time = 0
+        await updateTime(time)
+    })
+    res.json({message: 'All times stopped'})
 }

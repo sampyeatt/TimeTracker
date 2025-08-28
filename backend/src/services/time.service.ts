@@ -16,7 +16,16 @@ export async function getTimeByTimeId(timeId: number){
     })
 }
 
-export async function addNewTime(newTime: { client_name: string, key: string, userId: number}){
+export async function getRunningTime(userId: number){
+    return await Time.findAll({
+        where: {
+            userId: userId,
+            running: 1
+        }
+    })
+}
+
+export async function addNewTime(newTime: Partial<Time>){
     const timeInstance = new Time()
     timeInstance.set(newTime)
     timeInstance.set({running: 0})
@@ -28,5 +37,10 @@ export async function updateTime(timeData: Partial<Time>){
     if (!timeInstance) return
     timeInstance.set(timeData)
     return await timeInstance.save()
+}
 
+export async function deleteTime(timeId: number){
+    const timeInstance = await Time.findByPk(timeId)
+    if (!timeInstance) return
+    return await timeInstance.destroy()
 }
