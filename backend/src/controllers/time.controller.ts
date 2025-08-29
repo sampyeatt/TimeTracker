@@ -10,12 +10,18 @@ import {
 import z from 'zod'
 
 export const getTimeByUserIdController = async (req: Request, res: Response) => {
+    const schema = z.string().min(1)
+    const schemaValidation = schema.safeParse(req.params.userId)
+    if (!schemaValidation.success) return res.status(400).json({message: 'Missing/invalid user ID'})
     const userId = req.params.userId
     if (!userId) return res.status(400).send('User ID is required')
     res.json(await getTimeByUserId(+userId))
 }
 
 export const getTimeByTimeIdController = async (req: Request, res: Response) => {
+    const schema = z.string().min(1)
+    const schemaValidation = schema.safeParse(req.params.timeId)
+    if (!schemaValidation.success) return res.status(400).json({message: 'Missing/invalid time ID'})
     const timeId = req.params.timeId
     if (!timeId) return res.status(400).send('Time ID is required')
     res.json(await getTimeByTimeId(+timeId))
@@ -74,6 +80,9 @@ export const updateTimeController = async (req: Request, res: Response) => {
 }
 
 export const deleteTimeController = async (req: Request, res: Response) => {
+    const schema = z.string().min(1)
+    const schemaValidation = schema.safeParse(req.params.timeId)
+    if (!schemaValidation.success) return res.status(400).json({message: 'Missing/invalid time ID'})
     const timeId = req.params.timeId
     if (!timeId) return res.status(400).send('Time ID is required')
     await  deleteTime(+timeId)
