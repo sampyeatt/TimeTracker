@@ -16,7 +16,6 @@ export class AuthService {
   public router = inject(Router)
   token?: string | null = null
   auth: boolean = false
-  adminToken? : string | null = null
   currentUser = signal<Session | null | undefined> (undefined)
 
   register(email: string, password: string) {
@@ -50,10 +49,6 @@ export class AuthService {
     sessionStorage.setItem('user', JSON.stringify(user))
   }
 
-  saveAdminToken(token: string) {
-    sessionStorage.setItem('adminToken', token)
-  }
-
   loadToken() {
     if (typeof window !== 'undefined') {
       const token = sessionStorage.getItem('jwt')
@@ -63,29 +58,11 @@ export class AuthService {
     return null
   }
 
-  loadAdminToken() {
-    if (typeof window !== 'undefined')  {
-      const adminToken = sessionStorage.getItem('adminToken')
-      if (adminToken) return adminToken
-      return this.adminToken = adminToken
-    }
-    return null
-  }
-
   isAuthenticated() {
     if (typeof window !== 'undefined') {
       const token = this.loadToken()
       if (!token || this.currentUser() === null) return false
       return (token === this.currentUser()?.accessToken)
-    }
-    return false
-  }
-
-  isAdminAuthenticated() {
-    if (typeof window !== 'undefined') {
-      const token = this.loadAdminToken()
-      if (!token || this.currentUser() === null) return false
-      return (token === this.currentUser()?.adminToken)
     }
     return false
   }

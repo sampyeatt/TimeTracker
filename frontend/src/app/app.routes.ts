@@ -1,3 +1,19 @@
-import { Routes } from '@angular/router';
+import {RouterModule, Routes} from '@angular/router'
+import {LoginComponent} from './pages/login/login'
+import {RegisterComponent} from './pages/register/register'
+import {DashboardComponent} from './pages/dashboard/dashboard'
+import {authGuard} from './guard/auth.guard'
+import {NgModule} from '@angular/core'
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  {path: 'login', component: LoginComponent},
+  {path: 'register', component: RegisterComponent},
+  {path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
+  {path: '', redirectTo: 'login', pathMatch: 'full'}
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppModule {}

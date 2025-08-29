@@ -28,8 +28,6 @@ export class LoginComponent {
         .subscribe({
           next: (res) => {
             this.authService.saveToken(res.accessToken)
-            this.authService.saveUser(res)
-            if (res.adminToken !== null) this.authService.saveAdminToken(res.adminToken)
             this.authService.currentUser.set(res)
             this.router.navigate(['/dashboard'])
           },

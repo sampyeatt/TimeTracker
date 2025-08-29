@@ -1,5 +1,6 @@
 import {definePreset} from '@primeuix/themes'
-import Aura from '@primeuix/themes/nora'
+// @ts-ignore
+import Aura from '@primeuix/themes/aura'
 
 export const DarkMode = definePreset(Aura, {
   semantic: {
