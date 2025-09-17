@@ -3,6 +3,7 @@ import './database/index'
 import timeRoute from './routes/time.route'
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'
+import cors from 'cors'
 
 const app = express()
 const port: number = 3001
@@ -10,6 +11,10 @@ const port: number = 3001
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(cors({
+    origin: ['http://localhost:4200'],
+    credentials: true,
+}))
 
 app.use('/api/time', timeRoute)
 app.use('/api/auth', authRoutes)

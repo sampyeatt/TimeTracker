@@ -1,17 +1,18 @@
 import {computed, inject, Injectable} from '@angular/core'
 import {HttpClient} from '@angular/common/http'
-import {environment} from '../../environments/environment'
+import {environment} from '../../environments/environment.development'
 import {Time} from '../interface/api-interface'
+import {share} from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
 })
 export class TimeService {
-  apiUrl = computed(() => `${environment.API_URL}/api/drivers`)
+  apiUrl = computed(() => `${environment.API_URL}/api/time`)
   private http = inject(HttpClient)
 
   getTimeUserId(userId: number) {
-    return this.http.get<Time[]>(`${this.apiUrl()}/byUserId/${userId}`)
+    return this.http.get<Time[]>(`${this.apiUrl()}/byUserId/${userId}`).pipe(share())
   }
 
   newTime(userId: number, clientName: string, key: string) {

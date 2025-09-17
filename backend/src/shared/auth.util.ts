@@ -1,9 +1,7 @@
 import dotenv from 'dotenv'
-
 dotenv.config({
     path: './src/.env'
 })
-
 import jwt from 'jsonwebtoken'
 import {Request, Response} from 'express'
 import {User} from '../models/User'

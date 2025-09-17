@@ -29,7 +29,8 @@ export class DashboardComponent implements OnInit{
     if (!user) return
     this.timeService.getTimeUserId(user?.user.userId).subscribe({
       next: (res) => {
-        this.cdref.detectChanges()
+        console.log(res)
+        this.cdref.markForCheck()
         this.times = res
       },
       error: (err) => {

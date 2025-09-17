@@ -9,7 +9,7 @@
     <ng-template #body let-time>
       <tr>
         <td>{{ time.client_name }}</td>
-        <td>{{ time.total_time</td>
+        <td>{{ time.total_time ?? 0 }}</td>
       </tr>
     </ng-template>
   </p-table>
