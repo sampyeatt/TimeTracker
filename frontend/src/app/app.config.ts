@@ -7,6 +7,7 @@ import {provideHttpClient, withFetch, withInterceptors} from '@angular/common/ht
 import {authInterceptor} from './interceptors/auth.interceptor'
 import {providePrimeNG} from 'primeng/config'
 import {DarkMode} from './component/theme/theme'
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
+    provideAnimationsAsync(),
     providePrimeNG({
       theme: {
         preset: DarkMode

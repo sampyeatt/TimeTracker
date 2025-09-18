@@ -66,14 +66,14 @@ export const updateTimeController = async (req: Request, res: Response) => {
         time.running = 1
         const updated = await updateTime(time)
         if (!updated) return res.status(400).json({message: 'Time not updated', errors: updated})
-        res.json({message: 'Time started'})
+        res.json({message: 'Time started', time: updated})
     } else if (time.running) { // STOP TIME
-        time.total_time = (Date.now() - time.current_time)
+        time.total_time += (Date.now() - time.current_time)
         time.running = 0
         time.current_time = 0
         const updated = await updateTime(time)
         if (!updated) return res.status(400).json({message: 'Time not updated', errors: updated})
-        res.json({message: 'Time stopped'})
+        res.json({message: 'Time stopped', time: updated})
     } else {
         res.json({message: `Something went wrong... very wrong. running = ${time.running} for id = ${id} and client_name = ${time.client_name}`})
     }

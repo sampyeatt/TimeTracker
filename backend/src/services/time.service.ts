@@ -28,7 +28,7 @@ export async function getRunningTime(userId: number){
 export async function addNewTime(newTime: Partial<Time>){
     const timeInstance = new Time()
     timeInstance.set(newTime)
-    timeInstance.set({running: 0})
+    timeInstance.set({running: 0, total_time: 0})
     return await timeInstance.save()
 }
 

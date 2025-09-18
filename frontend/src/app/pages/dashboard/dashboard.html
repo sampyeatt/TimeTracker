@@ -1,16 +1,38 @@
+<p-button class="w-full max-w-[17.35rem]" (onClick)="this.showDialog()" pRipple class="p-3">Add New Time to Track</p-button>
+<p-dialog header="New Time" [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }">
+  <div class="p-3">
+    <p-floatlabel variant="on">
+      <input pInputText id="clientName" [(ngModel)]="this.clientName" />
+      <label for="clientName">Client Name</label>
+    </p-floatlabel>
+  </div>
+  <div class="p-3">
+    <p-floatlabel variant="on">
+      <input pInputText id="key" [(ngModel)]="this.key" />
+      <label for="key">Key</label>
+    </p-floatlabel>
+  </div>
+  <div>
+    <p-button label="Cancel" severity="secondary" (click)="visible = false" />
+    <p-button (click)="visible = false" (onClick)="this.newTime()" type="submit" label="Add Time"/>
+  </div>
+</p-dialog>
 @if (this.times) {
   <p-table [value]="this.times" [tableStyle]="{ 'min-width': '50rem' }">
-    <ng-template #header>
-      <tr>
-        <th>Client Name</th>
-        <th>total_time</th>
-      </tr>
-    </ng-template>
     <ng-template #body let-time>
-      <tr>
-        <td>{{ time.client_name }}</td>
-        <td>{{ time.total_time ?? 0 }}</td>
-      </tr>
+      <div class=" p-4">
+        @if (!time.running) {
+          <p-button class="w-full max-w-[17.35rem]" outlined (onClick)="this.startTime(time.id)" pRipple>
+            <p>{{ time.client_name }}<br>{{ (time.total_time / (1000 * 60 * 60)).toFixed(2)}} hours</p>
+          </p-button>
+        }
+        @if (time.running) {
+          <p-button class="w-full max-w-[17.35rem]" raised (onClick)="this.stopTime(time.id)" pRipple>
+            <p>{{ time.client_name }}<br>
+              {{ (time.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
+          </p-button>
+        }
+      </div>
     </ng-template>
   </p-table>
 }
