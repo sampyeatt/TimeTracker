@@ -13,8 +13,9 @@ export const authGuard: CanActivateFn = (route, state) => {
   if (auth.isAuthenticated()) {
     return true
   } else {
-    if (auth.currentUser() !== null) {
-      auth.refreshToken().subscribe({
+    const user = auth.currentUser()
+    if (user) {
+      auth.refreshToken(user.refreshToken).subscribe({
         next: (res) => {
           auth.saveToken(res.accessToken)
           auth.saveUser(res)

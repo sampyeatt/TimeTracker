@@ -36,8 +36,8 @@ export class AuthService {
 
   }
 
-  refreshToken() {
-    return this.http.post<Session>(`${this.apiUrl}/refresh`, {token: this.currentUser()?.refreshToken})
+  refreshToken(refreshToken: string) {
+    return this.http.post<Session>(`${this.apiUrl}/refresh`, {refreshToken: refreshToken})
   }
 
   saveToken(token: string) {

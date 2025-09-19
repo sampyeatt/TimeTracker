@@ -23,3 +23,8 @@ export interface UpdateResponse {
   message: string,
   time: Time
 }
+
+export interface StopResponse {
+  message: string,
+  times: Time[]
+}

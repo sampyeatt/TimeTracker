@@ -1,7 +1,7 @@
 import {computed, inject, Injectable} from '@angular/core'
 import {HttpClient} from '@angular/common/http'
 import {environment} from '../../environments/environment.development'
-import {Time, UpdateResponse} from '../interface/api-interface'
+import {StopResponse, Time, UpdateResponse} from '../interface/api-interface'
 import {share} from 'rxjs'
 
 @Injectable({
@@ -24,7 +24,11 @@ export class TimeService {
   }
 
   stopAllTime(userId: number){
-    return this.http.put(`${this.apiUrl()}/stopTime`, {userId: userId})
+    return this.http.put<StopResponse>(`${this.apiUrl()}/stopTime`, {userId: userId})
+  }
+
+  resetAllTime(userId: number){
+    return this.http.put<StopResponse>(`${this.apiUrl()}/resetTime`, {userId: userId})
   }
 
   deleteTime(id: number){

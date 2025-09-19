@@ -10,6 +10,7 @@ import {RippleModule} from 'primeng/ripple'
 import {DialogModule} from 'primeng/dialog'
 import {FloatLabelModule} from 'primeng/floatlabel'
 import {InputTextModule} from 'primeng/inputtext'
+import {DataViewModule} from 'primeng/dataview'
 
 @Component({
   selector: 'app-dashboard',
@@ -22,7 +23,8 @@ import {InputTextModule} from 'primeng/inputtext'
     DialogModule,
     FormsModule,
     FloatLabelModule,
-    InputTextModule
+    InputTextModule,
+    DataViewModule
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
@@ -32,9 +34,11 @@ export class DashboardComponent implements OnInit{
   private timeService = inject(TimeService)
   private authService = inject(AuthService)
   private cdref = inject(ChangeDetectorRef)
+  protected readonly Math = Math
 
   times: Time[] = []
   visible: boolean = false
+  endDayDialog: boolean = false
   clientName: string = ''
   key: string = ''
 
@@ -120,4 +124,34 @@ export class DashboardComponent implements OnInit{
     })
   }
 
+  endDay() {
+    const user = this.authService.currentUser()
+    if (!user) return
+    this.timeService.stopAllTime(user.user.userId).subscribe({
+      next: (res) => {
+        this.times = res.times
+        this.endDayDialog = true
+        this.cdref.markForCheck()
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
+  }
+
+  resetTimes() {
+    const user = this.authService.currentUser()
+    if (!user) return
+    this.timeService.resetAllTime(user.user.userId).subscribe({
+      next: (res) => {
+        console.log(res)
+        this.times = res.times
+        this.endDayDialog = false
+        this.cdref.markForCheck()
+      },
+      error: (err) => {
+        console.error(err)
+      }
+    })
+  }
 }

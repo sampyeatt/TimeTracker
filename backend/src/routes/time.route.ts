@@ -2,7 +2,7 @@ import {Router} from 'express'
 import {
     addNewTimeController, deleteTimeController,
     getTimeByTimeIdController,
-    getTimeByUserIdController, stopAllTimeController, updateTimeController
+    getTimeByUserIdController, resetAllTimeController, stopAllTimeController, updateTimeController
 } from '../controllers/time.controller'
 import {authenticateJWT} from '../shared/auth.util'
 
@@ -13,6 +13,7 @@ router.get('/byTimeId/:timeId', authenticateJWT, getTimeByTimeIdController)
 router.post('/newTime', authenticateJWT, addNewTimeController)
 router.put('/updateTime', authenticateJWT, updateTimeController)
 router.put('/stopTime', authenticateJWT, stopAllTimeController)
+router.put('/resetTime', authenticateJWT, resetAllTimeController)
 router.delete('/deleteTime/:timeId', authenticateJWT, deleteTimeController)
 
 

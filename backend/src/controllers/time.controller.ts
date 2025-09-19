@@ -8,6 +8,7 @@ import {
     updateTime
 } from '../services/time.service'
 import z from 'zod'
+import {Time} from '../models/Time'
 
 export const getTimeByUserIdController = async (req: Request, res: Response) => {
     const schema = z.string().min(1)
@@ -106,5 +107,32 @@ export const stopAllTimeController = async (req: Request, res: Response) => {
         time.current_time = 0
         await updateTime(time)
     })
-    res.json({message: 'All times stopped'})
+    const allTimes = await getTimeByUserId(userId)
+    res.json({message: 'All times stopped', times: allTimes})
+}
+
+export const resetAllTimeController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        userId: z.number()
+    })
+    const schemaValidation = schema.safeParse(req.body)
+    if (!schemaValidation.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: schemaValidation.error.issues
+    })
+    console.log('req.body: ', req.body)
+    const {userId} = req.body
+    const times = (await getTimeByUserId(userId)).map(time => time.toJSON())
+    console.log('times', times)
+    let updatedTimes: Time[] = []
+    times.forEach(async (time) => {
+        time.total_time = 0
+        time.running = 0
+        time.current_time = 0
+        const updated = await updateTime(time)
+        if (!updated) return res.status(400).json({message: 'Time not updated', errors: updated})
+        updatedTimes.push(updated.toJSON())
+    })
+    console.log('updatedTimes', updatedTimes)
+    res.json({message: 'All times reset', times: updatedTimes})
 }
