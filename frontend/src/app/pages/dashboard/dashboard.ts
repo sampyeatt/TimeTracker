@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, inject, OnInit} from '@angular/core'
+import {ChangeDetectorRef, Component, inject, OnInit, signal} from '@angular/core'
 import {Time} from '../../interface/api-interface'
 import {TimeService} from '../../services/time.service'
 import {AuthService} from '../../services/auth.service'
@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit{
   private cdref = inject(ChangeDetectorRef)
   protected readonly Math = Math
 
-  times: Time[] = []
+  times = signal<Time[]>([])
   visible: boolean = false
   endDayDialog: boolean = false
   clientName: string = ''
@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit{
 
   ngOnInit() {
     this.getTime()
+    this.cdref.markForCheck()
   }
 
   getTime(){
@@ -52,8 +53,8 @@ export class DashboardComponent implements OnInit{
     this.timeService.getTimeUserId(user?.user.userId).subscribe({
       next: (res) => {
         console.log(res)
-        this.times = res
-        this.cdref.detectChanges()
+        this.times.set(res)
+        console.log(this.times())
       },
       error: (err) => {
         console.error(err)
@@ -64,12 +65,12 @@ export class DashboardComponent implements OnInit{
   startTime(timeId: number){
     const user = this.authService.currentUser()
     if (!user) return
-    const runningTime = this.times.findIndex(time => time.running === 1)
+    const runningTime = this.times().findIndex(time => time.running === 1)
     if (runningTime !== -1) {
-      this.timeService.updateTime(this.times[runningTime].id, user?.user.userId).subscribe({
+      this.timeService.updateTime(this.times()[runningTime].id, user?.user.userId).subscribe({
         next: (res) => {
           console.log(res)
-          this.times[runningTime] = res.time
+          this.times()[runningTime] = res.time
           this.cdref.markForCheck()
         },
         error: (err) => {
@@ -79,7 +80,7 @@ export class DashboardComponent implements OnInit{
     }
     this.timeService.updateTime(timeId, user?.user.userId).subscribe({
       next: (res) => {
-        this.times[this.times.findIndex(time => time.id === timeId)].running = 1
+        this.times()[this.times().findIndex(time => time.id === timeId)].running = 1
         this.cdref.markForCheck()
       },
       error: (err) => {
@@ -93,7 +94,7 @@ export class DashboardComponent implements OnInit{
     if (!user) return
     this.timeService.updateTime(timeId, user?.user.userId).subscribe({
       next: (res) => {
-        this.times[this.times.findIndex(time => time.id === timeId)] = res.time
+        this.times()[this.times().findIndex(time => time.id === timeId)] = res.time
         this.cdref.markForCheck()
       },
       error: (err) => {
@@ -113,7 +114,7 @@ export class DashboardComponent implements OnInit{
     console.log(this.clientName + ' ' + this.key)
     this.timeService.newTime(user.user.userId, this.clientName, this.key).subscribe({
       next: (res) => {
-        this.times.push(res)
+        this.times().push(res)
         this.clientName = ''
         this.key = ''
         this.cdref.markForCheck()
@@ -129,7 +130,7 @@ export class DashboardComponent implements OnInit{
     if (!user) return
     this.timeService.stopAllTime(user.user.userId).subscribe({
       next: (res) => {
-        this.times = res.times
+        this.times.set(res.times)
         this.endDayDialog = true
         this.cdref.markForCheck()
       },
@@ -145,7 +146,7 @@ export class DashboardComponent implements OnInit{
     this.timeService.resetAllTime(user.user.userId).subscribe({
       next: (res) => {
         console.log(res)
-        this.times = res.times
+        this.times.set(res.times)
         this.endDayDialog = false
         this.cdref.markForCheck()
       },
