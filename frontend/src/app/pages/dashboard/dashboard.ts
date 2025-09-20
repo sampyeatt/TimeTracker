@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit{
   times = signal<Time[]>([])
   visible: boolean = false
   endDayDialog: boolean = false
+  deleteDialog: boolean = false
   clientName: string = ''
   key: string = ''
 
@@ -52,7 +53,6 @@ export class DashboardComponent implements OnInit{
     if (!user) return
     this.timeService.getTimeUserId(user?.user.userId).subscribe({
       next: (res) => {
-        console.log(res)
         this.times.set(res)
         console.log(this.times())
       },
@@ -69,7 +69,6 @@ export class DashboardComponent implements OnInit{
     if (runningTime !== -1) {
       this.timeService.updateTime(this.times()[runningTime].id, user?.user.userId).subscribe({
         next: (res) => {
-          console.log(res)
           this.times()[runningTime] = res.time
           this.cdref.markForCheck()
         },
@@ -145,7 +144,6 @@ export class DashboardComponent implements OnInit{
     if (!user) return
     this.timeService.resetAllTime(user.user.userId).subscribe({
       next: (res) => {
-        console.log(res)
         this.times.set(res.times)
         this.endDayDialog = false
         this.cdref.markForCheck()
@@ -154,5 +152,10 @@ export class DashboardComponent implements OnInit{
         console.error(err)
       }
     })
+  }
+
+  deleteTimes(time: Time){
+    this.timeService.deleteTime(time.id).subscribe({})
+    this.times.update(times => times.filter(t => t.id !== time.id))
   }
 }

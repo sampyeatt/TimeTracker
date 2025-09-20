@@ -1,39 +1,67 @@
-<p-button class="w-full max-w-[17.35rem]" (onClick)="this.showDialog()" pRipple class="p-3">Add New Time to Track</p-button>
-<p-dialog header="New Time" [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }">
+<div class="flex justify-center">
   <div class="p-3">
-    <p-floatlabel variant="on">
-      <input pInputText id="clientName" [(ngModel)]="this.clientName"/> <label for="clientName">Client Name</label>
-    </p-floatlabel>
-  </div>
-  <div class="p-3">
-    <p-floatlabel variant="on">
-      <input pInputText id="key" [(ngModel)]="this.key"/> <label for="key">Key</label>
-    </p-floatlabel>
-  </div>
-  <div class="flex justify-center p-3">
-    <p-button label="Cancel" severity="secondary" (click)="visible = false" class="p-2"/>
-    <p-button (click)="visible = false" (onClick)="this.newTime()" type="submit" label="Add Time" class="p-2"/>
-  </div>
-</p-dialog>
-<div class="p-3">
-  <p-button (onClick)="this.endDay()" severity="danger" label="End Day"/>
-  <p-dialog header="End Day" [(visible)]="endDayDialog" [modal]="true" [style]="{ width: '50rem' }">
-    <div class="p-3">
-      <p-table [value]="this.times()" [tableStyle]="{ 'min-width': '50rem' }">
-        <ng-template #body let-time>
-          <tr>
-            <td style="width:20%">{{ time.client_name }}</td>
-            <td>{{ (Math.ceil((time.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
-      <div class="flex justify-center p-3">
-        <p-button label="Cancel" severity="secondary" (click)="endDayDialog = false" class="p-2"/>
-        <p-button (onClick)="this.resetTimes()" severity="danger" label="Done Entering Time" class="p-2"/>
+    <p-button class="w-full max-w-[17.35rem]" (onClick)="this.showDialog()" pRipple><i class="pi pi-plus"></i> Add New Client</p-button>
+    <p-dialog header="New Time" [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }">
+      <div class="p-3">
+        <p-floatlabel variant="on">
+          <input pInputText id="clientName" [(ngModel)]="this.clientName"/> <label for="clientName">Client Name</label>
+        </p-floatlabel>
       </div>
-    </div>
-  </p-dialog>
+      <div class="p-3">
+        <p-floatlabel variant="on">
+          <input pInputText id="key" [(ngModel)]="this.key"/> <label for="key">Key</label>
+        </p-floatlabel>
+      </div>
+      <div class="flex justify-center p-3">
+        <p-button label="Cancel" severity="secondary" (click)="visible = false" class="p-2"/>
+        <p-button (click)="visible = false" (onClick)="this.newTime()" type="submit" label="Add Time" class="p-2"/>
+      </div>
+    </p-dialog>
+  </div>
+  <div class="p-3">
+    <p-button (onClick)="this.endDay()" severity="warn" pRipple><i class="pi pi-clock"></i> End Day</p-button>
+    <p-dialog header="End Day" [(visible)]="endDayDialog" [modal]="true" [style]="{ width: '50rem' }">
+      <div class="p-3">
+        <p-table [value]="this.times()" [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #body let-time>
+            <tr>
+              <td style="width:20%">{{ time.client_name }}</td>
+              <td>{{ (Math.ceil((time.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <div class="flex justify-center p-3">
+          <p-button label="Cancel" severity="secondary" (click)="endDayDialog = false" class="p-2"/>
+          <p-button (onClick)="this.resetTimes()" label="Done Entering Time" class="p-2"/>
+        </div>
+      </div>
+    </p-dialog>
+  </div>
+  <div class="p-3">
+    <p-button (onClick)="deleteDialog = true" severity="danger" pRipple><i class="pi pi-trash"></i> Delete Times</p-button>
+    <p-dialog header="End Day" [(visible)]="deleteDialog" [modal]="true" [style]="{ width: '50rem' }">
+      <div class="p-3">
+        <p-table [value]="this.times()" [tableStyle]="{ 'min-width': '50rem' }">
+          <ng-template #body let-time let-editing="editing">
+            <tr [pEditableRow]="time">
+              <td style="width:20%">{{ time.client_name }}</td>
+              <td>{{ (Math.ceil((time.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
+              <td>
+                <p-button type="button" pCancelEditableRow (onClick)="this.deleteTimes(time)" text rounded severity="warn" pTooltip="Delete Time">
+                  <i class="pi pi-trash"></i>
+                </p-button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <div class="flex justify-center p-3">
+          <p-button (onClick)="deleteDialog = false" label="Done" class="p-2"/>
+        </div>
+      </div>
+    </p-dialog>
+  </div>
 </div>
+
 @if (this.times().length > 0) {
   <p-dataView #dv [value]="this.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false">
     <ng-template #grid let-time pTemplate="gridItem">
@@ -41,12 +69,12 @@
         @for (t of this.times(); track t.id) {
           <div class="p-2">
             @if (!t.running) {
-              <p-button class="w-full max-w-[17.35rem]" outlined (onClick)="this.startTime(t.id)" pRipple>
+              <p-button class="w-full max-w-[17.35rem]" outlined (onClick)="this.startTime(t.id)" pRipple rounded>
                 <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
               </p-button>
             }
             @if (t.running) {
-              <p-button class="w-full max-w-[17.35rem]" raised (onClick)="this.stopTime(t.id)" pRipple>
+              <p-button class="w-full max-w-[17.35rem]" raised (onClick)="this.stopTime(t.id)" pRipple rounded>
                 <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
               </p-button>
             }
