@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, inject, OnInit, signal} from '@angular/core'
+import {ChangeDetectorRef, Component, HostListener, inject, OnInit, signal} from '@angular/core'
 import {Time} from '../../interface/api-interface'
 import {TimeService} from '../../services/time.service'
 import {AuthService} from '../../services/auth.service'
@@ -29,7 +29,7 @@ import {DataViewModule} from 'primeng/dataview'
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class DashboardComponent implements OnInit{
+export class DashboardComponent implements OnInit {
 
   private timeService = inject(TimeService)
   private authService = inject(AuthService)
@@ -48,7 +48,7 @@ export class DashboardComponent implements OnInit{
     this.cdref.markForCheck()
   }
 
-  getTime(){
+  getTime() {
     const user = this.authService.currentUser()
     if (!user) return
     this.timeService.getTimeUserId(user?.user.userId).subscribe({
@@ -62,7 +62,7 @@ export class DashboardComponent implements OnInit{
     })
   }
 
-  startTime(timeId: number){
+  startTime(timeId: number) {
     const user = this.authService.currentUser()
     if (!user) return
     const runningTime = this.times().findIndex(time => time.running === 1)
@@ -88,7 +88,7 @@ export class DashboardComponent implements OnInit{
     })
   }
 
-  stopTime(timeId: number){
+  stopTime(timeId: number) {
     const user = this.authService.currentUser()
     if (!user) return
     this.timeService.updateTime(timeId, user?.user.userId).subscribe({
@@ -107,7 +107,7 @@ export class DashboardComponent implements OnInit{
     this.visible = true
   }
 
-  newTime(){
+  newTime() {
     const user = this.authService.currentUser()
     if (!user) return
     console.log(this.clientName + ' ' + this.key)
@@ -154,8 +154,13 @@ export class DashboardComponent implements OnInit{
     })
   }
 
-  deleteTimes(time: Time){
+  deleteTimes(time: Time) {
     this.timeService.deleteTime(time.id).subscribe({})
     this.times.update(times => times.filter(t => t.id !== time.id))
+  }
+
+  @HostListener('window:keydown.enter', ['$event'])
+  handleKeyboardEvent(event: Event) {
+    console.log(event)
   }
 }
