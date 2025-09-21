@@ -9,8 +9,11 @@
       </div>
       <div class="p-3">
         <p-floatlabel variant="on">
-          <input pInputText id="key" [(ngModel)]="this.key"/> <label for="key">Key</label>
+          <input pInputText id="key" (keydown)="getKeyboardInput($event)" [(ngModel)]="this.key" /> <label for="key">Key</label>
         </p-floatlabel>
+        @if (this.invalidKey) {
+          <div class="text-red-500">That key is already in use</div>
+        }
       </div>
       <div class="flex justify-center p-3">
         <p-button label="Cancel" severity="secondary" (click)="visible = false" class="p-2"/>
@@ -63,18 +66,18 @@
 </div>
 
 @if (this.times().length > 0) {
-  <p-dataView #dv [value]="this.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false">
+  <p-dataView #dv [value]="this.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="flex justify-center p-3">
     <ng-template #grid let-time pTemplate="gridItem">
-      <div class="grid grid-cols-6 gap-2">
+      <div class="grid grid-cols-5 gap-2 max-w-[70rem]">
         @for (t of this.times(); track t.id) {
           <div class="p-2">
             @if (!t.running) {
-              <p-button class="w-full max-w-[17.35rem]" outlined (onClick)="this.startTime(t.id)" pRipple rounded>
+              <p-button outlined (onClick)="this.startTime(t.id)" pRipple rounded>
                 <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
               </p-button>
             }
             @if (t.running) {
-              <p-button class="w-full max-w-[17.35rem]" raised (onClick)="this.stopTime(t.id)" pRipple rounded>
+              <p-button raised (onClick)="this.stopTime(t.id)" pRipple rounded>
                 <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
               </p-button>
             }

@@ -42,6 +42,7 @@ export class DashboardComponent implements OnInit {
   deleteDialog: boolean = false
   clientName: string = ''
   key: string = ''
+  invalidKey: boolean = false
 
   ngOnInit() {
     this.getTime()
@@ -54,7 +55,6 @@ export class DashboardComponent implements OnInit {
     this.timeService.getTimeUserId(user?.user.userId).subscribe({
       next: (res) => {
         this.times.set(res)
-        console.log(this.times())
       },
       error: (err) => {
         console.error(err)
@@ -124,6 +124,21 @@ export class DashboardComponent implements OnInit {
     })
   }
 
+  getKeyboardInput(event: KeyboardEvent) {
+    console.log('Test')
+    const keyArray = this.times().map(time => time.key)
+    if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
+      this.invalidKey = true
+      this.cdref.markForCheck()
+      return
+    } else {
+      console.log('Good', event.code)
+      this.invalidKey = false
+      this.key = event.code
+      this.cdref.markForCheck()
+    }
+  }
+
   endDay() {
     const user = this.authService.currentUser()
     if (!user) return
@@ -159,8 +174,15 @@ export class DashboardComponent implements OnInit {
     this.times.update(times => times.filter(t => t.id !== time.id))
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
-  handleKeyboardEvent(event: Event) {
-    console.log(event)
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.deleteDialog || this.endDayDialog || this.visible) return
+    const keyArray = this.times().map(time => time.key)
+    if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
+      const time = this.times().find(time => time.key === event.code)
+      if (!time) return
+      if (time.running === 1) this.stopTime(time.id)
+      else this.startTime(time.id)
+    }
   }
 }
