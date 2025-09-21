@@ -19,6 +19,8 @@ export class NavBarComponent {
   public authService = inject(AuthService)
   public router = inject(Router)
 
+  todaysDate = new Date().toLocaleDateString().split('T')[0]
+
   get authenticated(){
     return this.authService.isAuthenticated();
   }
