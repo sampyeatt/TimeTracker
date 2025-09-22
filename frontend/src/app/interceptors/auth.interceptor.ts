@@ -18,7 +18,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       // @ts-ignore
       catchError(error => {
         if (error.status === 401) {
-          return handle401Error(req, next)
+          console.log('Test', error)
+          return handle401Error(req, next, authService)
         } else {
           return throwError(error)
         }
@@ -28,8 +29,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req)
 }
 
-const handle401Error = (req: HttpRequest<any>, next: HttpHandlerFn) => {
-  const authService = inject(AuthService)
+const handle401Error = (req: HttpRequest<any>, next: HttpHandlerFn, authService: AuthService) => {
 
   console.log('Refreshing token')
   if (!refreshing) {
