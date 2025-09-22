@@ -40,6 +40,10 @@ export class AuthService {
     return this.http.post<Session>(`${this.apiUrl}/refresh`, {refreshToken: refreshToken})
   }
 
+  validateToken(token: string) {
+    return this.http.post(`${this.apiUrl}/auth/validateToken`, {token: token})
+  }
+
   saveToken(token: string) {
     this.token = token
     sessionStorage.setItem('jwt', token)

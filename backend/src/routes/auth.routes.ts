@@ -4,7 +4,7 @@ import {
     loginController,
     logoutController,
     refreshTokenController,
-    registerController, resetPasswordController, validateUserController
+    registerController, resetPasswordController, validateTokenController, validateUserController
 } from '../controllers/auth.controller'
 import {authenticateJWT} from '../shared/auth.util'
 
@@ -19,5 +19,6 @@ router.post('/refresh', refreshTokenController)
 router.post('/forgot-password', forgotPasswordController)
 router.post('/reset-password', resetPasswordController)
 router.post('/validateUser',authenticateJWT, validateUserController)
+router.post('/validateToken', validateTokenController)
 
 export default router

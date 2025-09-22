@@ -13,19 +13,6 @@ export const authGuard: CanActivateFn = (route, state) => {
   if (auth.isAuthenticated()) {
     return true
   } else {
-    const user = auth.currentUser()
-    if (user) {
-      auth.refreshToken(user.refreshToken).subscribe({
-        next: (res) => {
-          auth.saveToken(res.accessToken)
-          auth.saveUser(res)
-          return true
-        },
-        error: (err) => {
-          console.log(err)
-        }
-      })
-    }
     router.navigate(['/login'])
     return false
   }
