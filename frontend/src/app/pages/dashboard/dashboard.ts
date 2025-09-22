@@ -43,6 +43,7 @@ export class DashboardComponent implements OnInit {
   clientName: string = ''
   key: string = ''
   invalidKey: boolean = false
+  endOfDayTimes: Time[] = []
 
   ngOnInit() {
     this.getTime()
@@ -145,6 +146,7 @@ export class DashboardComponent implements OnInit {
     this.timeService.stopAllTime(user.user.userId).subscribe({
       next: (res) => {
         this.times.set(res.times)
+        this.endOfDayTimes = this.times().filter(time => time.total_time != 0)
         this.endDayDialog = true
         this.cdref.markForCheck()
       },
