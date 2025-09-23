@@ -94,6 +94,8 @@ export const refreshTokenController = async (req: Request, res: Response) => {
     if (!dbRefreshToken || dbRefreshToken.get('type') !== 'refresh') return res.status(400).json({message: 'Invalid token'})
 
     const userId = dbRefreshToken.get('userId')!
+    const user = await getAllById(userId)
+    if (!user) return res.status(400).json({message: 'User Not Found'})
     const accessToken = await generateToken(userId)
     const newRefreshToken = await generateToken(userId, '7d')
 
@@ -101,8 +103,16 @@ export const refreshTokenController = async (req: Request, res: Response) => {
 
     await addToken(newRefreshToken, 'refresh', userId)
     await addToken(accessToken, 'access', userId)
+    const session = {
+        accessToken,
+        refreshToken: newRefreshToken,
+        user: user.toJSON()
+    }
 
-    return res.status(200).json({accessToken, refreshToken: newRefreshToken})
+    // @ts-ignore
+    delete session.user.password
+
+    return res.status(200).json(session)
 }
 
 export const logoutController = async (req: Request, res: Response) => {

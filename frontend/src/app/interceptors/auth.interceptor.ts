@@ -9,12 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService)
   const token = authService.loadToken()
   if (token) {
-    const authReq = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-    return next(authReq).pipe(
+    return next(addToken(req, token)).pipe(
       // @ts-ignore
       catchError(error => {
         if (error.status === 401) {
