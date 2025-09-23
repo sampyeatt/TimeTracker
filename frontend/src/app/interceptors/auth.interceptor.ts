@@ -21,7 +21,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           console.log('Test', error)
           return handle401Error(req, next, authService)
         } else {
-          return throwError(error)
+          return new Error(error)
         }
       })
     )
@@ -30,7 +30,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 }
 
 const handle401Error = (req: HttpRequest<any>, next: HttpHandlerFn, authService: AuthService) => {
-
   console.log('Refreshing token')
   if (!refreshing) {
     refreshing = true
