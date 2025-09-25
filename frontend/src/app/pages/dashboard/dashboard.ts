@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit {
   key: string = ''
   invalidKey: boolean = false
   endOfDayTimes: Time[] = []
+  endOfDayTimesTotal: number = 0
 
   ngOnInit() {
     this.getTime()
@@ -147,6 +148,10 @@ export class DashboardComponent implements OnInit {
       next: (res) => {
         this.times.set(res.times)
         this.endOfDayTimes = this.times().filter(time => time.total_time != 0)
+        this.endOfDayTimesTotal = this.endOfDayTimes.map(value => {
+          return (Math.ceil((value.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2)
+        }).reduce((a, b) => parseFloat(a.toString()) + parseFloat(b.toString()), 0)
+        console.log(this.endOfDayTimesTotal)
         this.endDayDialog = true
         this.cdref.markForCheck()
       },
