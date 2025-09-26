@@ -10,6 +10,9 @@ services:
       - SQLITE_DATABASE=/data/database.sqlite
     networks:
       - internalnet
+  backend:
+  container_name: tt-backend
+
 networks:
   internalnet:
     driver: bridge

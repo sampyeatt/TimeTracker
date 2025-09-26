@@ -81,12 +81,12 @@
             <div class="p-2">
               @if (!t.running) {
                 <p-button outlined (onClick)="this.startTime(t.id)" pRipple rounded>
-                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
+                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours<br>{{t.key}}</p>
                 </p-button>
               }
               @if (t.running) {
                 <p-button raised (onClick)="this.stopTime(t.id)" pRipple rounded>
-                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
+                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours<br>{{t.key}}</p>
                 </p-button>
               }
             </div>
