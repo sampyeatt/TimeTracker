@@ -1,14 +1,34 @@
 {
   "name": "frontend",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "concurrently \"ng serve\" \"npm run electron:start\"",
     "build": "ng build",
+    "electron:build": "ng build --base-href ./",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
-    "vite": "vite"
+    "vite": "vite",
+    "electron:start": "electron .",
+    "electron:build-deb": "npm run electron:build && electron-builder --linux deb tar.xz"
+  },
+  "build": {
+    "appId": "TimeTrackerApp",
+    "files": [
+      "dist/frontend",
+      "main-electron.js",
+      "package.json"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "linux": {
+      "target": "deb"
+    },
+    "deb": {
+      "packageName": "timetracker"
+    }
   },
   "prettier": {
     "printWidth": 100,
@@ -52,6 +72,9 @@
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
+    "concurrently": "^9.2.1",
+    "electron": "^38.1.2",
+    "electron-builder": "^26.0.12",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -59,5 +82,13 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.9.2"
-  }
+  },
+  "description": "Time Tracker Application to track your work hours.",
+  "main": "main-electron.js",
+  "keywords": [],
+  "author": {
+    "name": "Sam Pyeatt",
+    "email": "sampyeatt@gmail.com"
+  },
+  "license": "ISC"
 }
