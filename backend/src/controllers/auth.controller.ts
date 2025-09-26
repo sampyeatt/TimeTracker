@@ -145,10 +145,10 @@ export const confirmEmailController = async (req: Request, res: Response) => {
     const isValid = await verifyToken(token!)
     if (!isValid) return res.status(400).json({message: 'Invalid or expired token'})
 
-    const dbToken = await getToken(token!)
-    if (!dbToken || dbToken.get('type') !== 'activation') return res.status(400).json({message: 'Invalid token'})
+    const dbToken = (await getToken(token!))?.toJSON()
+    if (!dbToken || dbToken.type !== 'activation') return res.status(400).json({message: 'Invalid token'})
 
-    const userId = dbToken.get('userId')!
+    const userId = dbToken.userId
 
     await updateUser({
         id: userId,
