@@ -9,6 +9,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src-front/**/*.ts",
+    "src-back/**/*.ts"
   ]
 }

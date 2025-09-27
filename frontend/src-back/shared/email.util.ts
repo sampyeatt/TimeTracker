@@ -2,7 +2,7 @@ import {Resend} from 'resend'
 import dotenv from 'dotenv'
 
 dotenv.config({
-    path: './src/.env'
+    path: './src-front-back/.env'
 })
 
 export function sendConfirmationEmail(email: string, token: string) {

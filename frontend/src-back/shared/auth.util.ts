@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 dotenv.config({
-    path: './src/.env'
+    path: './src-front-back/.env'
 })
 import jwt from 'jsonwebtoken'
 import {Request, Response} from 'express'

@@ -1,5 +1,5 @@
 import express from 'express'
-import './database/index'
+import './database'
 import timeRoute from './routes/time.route'
 import authRoutes from './routes/auth.routes'
 import userRoutes from './routes/user.routes'

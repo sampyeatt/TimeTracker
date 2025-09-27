@@ -9,9 +9,11 @@
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src-front/**/*.ts",
+    "src-back/**/*.ts"
   ],
   "exclude": [
-    "src/**/*.spec.ts"
+    "src-front/**/*.spec.ts",
+    "src-back/**/*.spec.ts"
   ]
 }
