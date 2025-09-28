@@ -3,6 +3,7 @@
     <h2 class="text-2xl font-bold mb-4">Register</h2>
     <form (submit)="onSubmit()" [formGroup]="form">
       <div>
+        <input formControlName="name" name="name" type="text" placeholder="UserName" required class="block w-full mb-3 p-2 border rounded-md"/>
         <input formControlName="email" name="email" type="text" placeholder="Email" required class="block w-full mb-3 p-2 border rounded-md"/>
 
         @if (form.get('email')?.touched && form.get('email')?.errors) {

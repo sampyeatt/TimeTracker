@@ -19,13 +19,14 @@ export class RegisterComponent {
   fb = inject(FormBuilder)
 
   form = this.fb.group({
+    name: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$')]],
   })
 
   onSubmit(){
     if(this.form.valid){
-      this.authService.register(this.form.value.email as string, this.form.value.password as string)
+      this.authService.register(this.form.value.name as string, this.form.value.email as string, this.form.value.password as string)
         .subscribe({
           next:()=>{
             alert('Registration successful! Please check your email and log in.');

@@ -18,8 +18,8 @@ export class AuthService {
   auth: boolean = false
   currentUser = signal<Session | null | undefined> (undefined)
 
-  register(email: string, password: string) {
-    return this.http.post(`${this.apiUrl}/register`, {email: email, password})
+  register(name: string, email: string, password: string) {
+    return this.http.post(`${this.apiUrl}/register`, {name, email: email, password})
   }
 
   logout() {
