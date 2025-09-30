@@ -84,7 +84,7 @@
     "typescript": "~5.9.2"
   },
   "description": "Time Tracker Application to track your work hours.",
-  "main": "main.js",
+  "main": "main-electron.js",
   "keywords": [],
   "author": {
     "name": "Sam Pyeatt",

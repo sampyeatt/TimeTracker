@@ -42,6 +42,7 @@ export class DashboardComponent implements OnInit {
   deleteDialog: boolean = false
   clientName: string = ''
   key: string = ''
+  keyDisp: string = ''
   invalidKey: boolean = false
   endOfDayTimes: Time[] = []
   endOfDayTimesTotal: number = 0
@@ -127,14 +128,12 @@ export class DashboardComponent implements OnInit {
   }
 
   getKeyboardInput(event: KeyboardEvent) {
-    console.log('Test')
     const keyArray = this.times().map(time => time.key)
     if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
       this.invalidKey = true
       this.cdref.markForCheck()
       return
     } else {
-      console.log('Good', event.code)
       this.invalidKey = false
       this.key = event.code
       this.cdref.markForCheck()

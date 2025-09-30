@@ -31,6 +31,7 @@ export const registerController = async (req: Request, res: Response) => {
     const userId = user.get('userId')
     console.log('user id', userId)
     const token = await generateToken(userId)
+    console.log('token', token)
     await addToken(token, 'activation', userId)
     const emailSent = await sendConfirmationEmail(email, token)
     console.log('email sent', emailSent)
