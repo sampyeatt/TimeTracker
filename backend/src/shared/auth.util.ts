@@ -13,7 +13,7 @@ export const passwordZodRules = z.string().min(6).max(100).regex(/^(?=.*[a-z])(?
     message: 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
 })
 
-export async function generateToken(userId: number, expiresIn = '1h'): Promise<string> {
+export async function generateToken(userId: number, expiresIn = '1H'): Promise<string> {
     const payload = {
         userId: userId
     }

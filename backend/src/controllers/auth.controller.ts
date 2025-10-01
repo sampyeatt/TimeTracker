@@ -59,8 +59,8 @@ export const loginController = async (req: Request, res: Response) => {
     const match = await bcrypt.compare(password, user.get('password'))
     if (!match) return res.status(400).json({message: 'Invalid credentials'})
 
-    const accessToken = await generateToken(user.get('userId')!)
-    const refreshToken = await generateToken(user.get('userId')!, '7d')
+    const accessToken = await generateToken(user.get('userId')!, '1D')
+    const refreshToken = await generateToken(user.get('userId')!, '7D')
     await deleteTokens(user.get('userId')!)
     await addToken(refreshToken, 'refresh', user.get('userId')!)
     await addToken(accessToken, 'access', user.get('userId')!)
@@ -97,8 +97,8 @@ export const refreshTokenController = async (req: Request, res: Response) => {
     const userId = dbRefreshToken.get('userId')!
     const user = await getAllById(userId)
     if (!user) return res.status(400).json({message: 'User Not Found'})
-    const accessToken = await generateToken(userId)
-    const newRefreshToken = await generateToken(userId, '7d')
+    const accessToken = await generateToken(userId, '1D')
+    const newRefreshToken = await generateToken(userId, '7D')
 
     await deleteTokens(userId)
 

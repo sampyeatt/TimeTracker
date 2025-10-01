@@ -58,6 +58,7 @@ export class DashboardComponent implements OnInit {
     this.timeService.getTimeUserId(user?.user.userId).subscribe({
       next: (res) => {
         this.times.set(res)
+        this.cdref.markForCheck()
       },
       error: (err) => {
         console.error(err)
@@ -119,6 +120,7 @@ export class DashboardComponent implements OnInit {
         this.times().push(res)
         this.clientName = ''
         this.key = ''
+        this.keyDisp = ''
         this.cdref.markForCheck()
       },
       error: (err) => {
