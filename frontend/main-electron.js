@@ -6,14 +6,14 @@ function createWindow () {
   const win = new BrowserWindow({
     x: 0,
     y: 0,
-    width: size.width,
-    height: size.height,
+    width: size.width/2,
+    height: size.height/2,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     }
   })
-
   win.loadURL('http://localhost:4200/')
 }
 
