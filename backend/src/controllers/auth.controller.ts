@@ -1,0 +1,253 @@
+import {Request, Response} from 'express'
+import z from 'zod'
+import {addUser, getAllById, getUserByEmail, updateUser} from '../services/user.service'
+import {generateToken, passwordZodRules, verifyToken} from '../shared/auth.util'
+import {addToken, deleteTokens, getToken} from '../services/token.service'
+import {sendConfirmationEmail, sendForgotPasswordEmail} from '../shared/email.util'
+import bcrypt from 'bcrypt'
+
+
+export const registerController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        name: z.string().min(1),
+        email: z.email(),
+        password: passwordZodRules
+    })
+
+    const parsedData = schema.safeParse(req.body)
+
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+
+    let {name, email, password} = req.body
+
+    const existingUser = await getUserByEmail(email)
+    if (existingUser) return res.status(400).json({message: 'User already exists'})
+
+    const hash = await bcrypt.hash(password,  10)
+    const user = await addUser(name, email, hash)
+    const userId = user.get('userId')
+    console.log('user id', userId)
+    const token = await generateToken(userId)
+    console.log('token', token)
+    await addToken(token, 'activation', userId)
+    const emailSent = await sendConfirmationEmail(email, token)
+    console.log('email sent', emailSent)
+    if (!emailSent.data) return res.status(500).json({message: 'Failed to send email'})
+    return res.status(201).json({message: 'User registered successfully'})
+
+}
+
+export const loginController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        email: z.email(),
+        password: passwordZodRules
+    })
+    const parsedData = schema.safeParse(req.body)
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+
+    const {email, password} = req.body
+
+    const user = await getUserByEmail(email)
+    if (!user) return res.status(400).json({message: 'User Not Found'})
+    if (user.get('status') !== 'active') return res.status(400).json({message: 'User is not active, please confirm your email'})
+    const match = await bcrypt.compare(password, user.get('password'))
+    if (!match) return res.status(400).json({message: 'Invalid credentials'})
+
+    const accessToken = await generateToken(user.get('userId')!, '1D')
+    const refreshToken = await generateToken(user.get('userId')!, '7D')
+    await deleteTokens(user.get('userId')!)
+    await addToken(refreshToken, 'refresh', user.get('userId')!)
+    await addToken(accessToken, 'access', user.get('userId')!)
+
+    const session = {
+        accessToken,
+        refreshToken,
+        user: user.toJSON()
+    }
+
+    // @ts-ignore
+    delete session.user.password
+
+    return res.status(200).json(session)
+}
+
+export const refreshTokenController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        refreshToken: z.string()
+    })
+    const parsedData = schema.safeParse(req.body)
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+    const {refreshToken} = parsedData.data
+
+    const isTokenValid = await verifyToken(refreshToken)
+    if (!isTokenValid) return res.status(400).json({message: 'Invalid token or expired'})
+
+    const dbRefreshToken = await getToken(refreshToken)
+    if (!dbRefreshToken || dbRefreshToken.get('type') !== 'refresh') return res.status(400).json({message: 'Invalid token'})
+
+    const userId = dbRefreshToken.get('userId')!
+    const user = await getAllById(userId)
+    if (!user) return res.status(400).json({message: 'User Not Found'})
+    const accessToken = await generateToken(userId, '1D')
+    const newRefreshToken = await generateToken(userId, '7D')
+
+    await deleteTokens(userId)
+
+    await addToken(newRefreshToken, 'refresh', userId)
+    await addToken(accessToken, 'access', userId)
+    const session = {
+        accessToken,
+        refreshToken: newRefreshToken,
+        user: user.toJSON()
+    }
+
+    // @ts-ignore
+    delete session.user.password
+
+    return res.status(200).json(session)
+}
+
+export const logoutController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        refreshToken: z.string()
+    })
+    const parsedData = schema.safeParse(req.body)
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+    const {refreshToken} = parsedData.data
+
+    const isTokenValid = await verifyToken(refreshToken)
+    if (!isTokenValid) return res.status(400).json({message: 'Invalid token or expired'})
+
+    const dbRefreshToken = await getToken(refreshToken)
+    if (!dbRefreshToken || dbRefreshToken.get('type') !== 'refresh') return res.status(400).json({message: 'Invalid token'})
+    const userId = dbRefreshToken.get('userId')!
+    await deleteTokens(userId)
+
+    return res.status(200).json({message: 'Logged out successfully'})
+}
+
+export const confirmEmailController = async (req: Request, res: Response) => {
+    const schema = z.string().min(1)
+    const schemaValidation = schema.safeParse(req.params.token)
+    if (!schemaValidation.success) return res.status(400).json({message: 'Missing Token'})
+    const {token} = req.params
+    const isValid = await verifyToken(token!)
+    if (!isValid) return res.status(400).json({message: 'Invalid or expired token'})
+
+    const dbToken = (await getToken(token!))?.toJSON()
+    if (!dbToken || dbToken.type !== 'activation') return res.status(400).json({message: 'Invalid token'})
+
+    const userId = dbToken.userId
+
+    await updateUser({
+        id: userId,
+        status: 'active'
+    })
+
+    await deleteTokens(userId)
+
+    const accessToken = await generateToken(userId)
+    const newRefreshToken = await generateToken(userId, '7d')
+    await addToken(newRefreshToken, 'refresh', userId)
+    await addToken(accessToken, 'access', userId)
+
+    return res.status(200).json({message: 'Email confirmed successfully'})
+}
+
+export const forgotPasswordController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        email: z.email(),
+        callbackUrl: z.url()
+    })
+    const parsedData = schema.safeParse(req.body)
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+    const {email, callbackUrl} = parsedData.data
+
+    const user = await getUserByEmail(email)
+    if (!user) return res.status(400).json({message: 'User not found'})
+    const token = await generateToken(user.get('userId')!)
+    await deleteTokens(user.get('userId')!)
+    await addToken(token, 'reset', user.get('userId')!)
+    await sendForgotPasswordEmail(email, token, callbackUrl)
+
+    return res.status(200).json({message: 'Password reset email sent successfully'})
+}
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        token: z.string(),
+        password: passwordZodRules
+    })
+    const parsedData = schema.safeParse(req.body)
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+    const {token, password} = parsedData.data
+    const isValid = await verifyToken(token)
+    if (!isValid) return res.status(400).json({message: 'Invalid or expired token'})
+    const dbToken = await getToken(token)
+    if (!dbToken || dbToken.get('type') !== 'reset') return res.status(400).json({message: 'Invalid token'})
+
+    const userId = dbToken.get('userId')!
+    bcrypt.hash(password, process.env.SALT_ROUNDS ?? 10, async (err, hash) => {
+        await updateUser({
+            id: userId,
+            password: hash
+        })
+        await deleteTokens(userId)
+        return res.status(200).json({message: 'Password reset successfully'})
+    })
+}
+
+export const getUserRoleController = async (req: Request, res: Response) => {
+    if (!req.params.userId) return res.status(400).json({message: 'UserId parameter is required'})
+    const {userId} = req.params
+    const user = await getAllById(+userId)
+    if (!user) return res.status(404).json({message: 'User not found'})
+    const role = user.get('role')
+    return res.status(200).json({role})
+}
+
+export const validateUserController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        token: z.string()
+    })
+    const parsedData = schema.safeParse(req.body)
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+    const {token} = parsedData.data
+    const validated = await verifyToken(token)
+    return res.status(200).json({valid: !!validated})
+}
+
+export const validateTokenController = async (req: Request, res: Response) => {
+    const schema = z.object({
+        token: z.string()
+    })
+    const parsedData = schema.safeParse(req.body)
+    if (!parsedData.success) return res.status(400).json({
+        message: 'Invalid request body',
+        errors: JSON.parse(parsedData.error.message)
+    })
+    const {token} = parsedData.data
+    const validated = await verifyToken(token)
+    return res.status(200).json({valid: !!validated})
+}

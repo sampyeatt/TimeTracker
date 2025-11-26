@@ -1,0 +1,18 @@
+services:
+  db:
+    container_name: tt-database
+    image: cleanstart/sqlite3:latest
+    ports:
+      - "5436:5436"
+    volumes:
+      - ./data:/data
+    environment:
+      - SQLITE_DATABASE=/data/database.sqlite
+    networks:
+      - internalnet
+  backend:
+  container_name: tt-backend
+
+networks:
+  internalnet:
+    driver: bridge
