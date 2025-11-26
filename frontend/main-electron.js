@@ -11,20 +11,14 @@ function createWindow () {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
     }
   })
-  win.loadURL('http://localhost:4200/')
+  win.loadFile(path.join(__dirname, '../frontend/dist/frontend/browser/index.csr.html'))
+  // win.loadURL('http://localhost:4200')
 }
 
 app.whenReady().then(() => {
-  createWindow()
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
-    }
-  })
+  if (app.isReady()) createWindow()
 })
 
 app.on('window-all-closed', () => {
