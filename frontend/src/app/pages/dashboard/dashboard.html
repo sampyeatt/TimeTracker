@@ -30,7 +30,7 @@
               <ng-template #body let-time>
                 <tr>
                   <td style="width:20%">{{ time.client_name }}</td>
-                  <td>{{ (Math.ceil((time.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
+                  <td>{{ (Math.ceil(((time.total_time - 300000) / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
                 </tr>
               </ng-template>
               <ng-template #footer>
