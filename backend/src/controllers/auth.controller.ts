@@ -1,6 +1,6 @@
 import {Request, Response} from 'express'
 import z from 'zod'
-import {addUser, getAllById, getUserByEmail} from '../services/user.service'
+import {addUser, getUserByEmail} from '../services/user.service'
 
 
 export const registerController = async (req: Request, res: Response) => {
