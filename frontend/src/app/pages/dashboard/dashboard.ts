@@ -46,6 +46,7 @@ export class DashboardComponent implements OnInit {
   invalidKey: boolean = false
   endOfDayTimes: Time[] = []
   endOfDayTimesTotal: number = 0
+  orderedList: Time[][] = [[]]
 
   ngOnInit() {
     this.getTime()

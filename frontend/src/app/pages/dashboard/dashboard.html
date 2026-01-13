@@ -76,7 +76,7 @@
   @if (this.times().length > 0) {
     <p-dataView #dv [value]="this.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="flex justify-center p-3">
       <ng-template #grid let-time pTemplate="gridItem">
-        <div class="grid grid-cols-5 gap-2 max-w-[70rem]">
+        <div class="grid grid-cols-5 gap-2">
           @for (t of this.times(); track t.id) {
             <div class="p-2">
               @if (!t.running) {

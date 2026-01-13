@@ -30,7 +30,6 @@ export class AuthService {
 
   setCurrentUser() {
     const user = this.getUser().pipe()
-    console.log('Fetching user from server.', user)
     if (user) {
       user.subscribe({
         next: (res) => {
@@ -49,10 +48,8 @@ export class AuthService {
   }
 
   isAuthenticated() {
-    console.log('Checking authentication.', this.currentUser())
     if (typeof window === 'undefined') {
       if (!this.currentUser()) {
-        console.log('User is not authenticated. Fetching user from server.')
         return this.setCurrentUser()
       }
       return (!!this.currentUser())

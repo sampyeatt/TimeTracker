@@ -22,9 +22,7 @@ export class NavBarComponent {
   todaysDate = new Date().toLocaleDateString().split('T')[0]
 
   get authenticated(){
-    console.log('auth')
     const test = this.authService.isAuthenticated()
-    console.log('TEST', test)
     return test
   }
 }
