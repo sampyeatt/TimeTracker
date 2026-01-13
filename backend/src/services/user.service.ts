@@ -9,13 +9,11 @@ export async function getAllById(userId: number) {
     return await User.findByPk(userId)
 }
 
-export async function addUser(name: string, email: string, password: string) {
+export async function addUser(name: string, email: string) {
     const user = new User()
     user.set({
         name: name,
-        email: email,
-        password: password,
-        status: 'pending'
+        email: email
     })
     return await user.save()
 
@@ -29,18 +27,14 @@ export async function getUserByEmail(email: string) {
     })
 }
 
-export const updateUser = async ({name, status, id, password}: {
+export const updateUser = async ({name, id}: {
     name?: string,
-    status?: 'active' | 'pending',
-    id: number,
-    password?: string
+    id: number
 }) => {
     const user = await User.findByPk(id)
     if (!user) throw new Error('User not found')
 
     user.set({userId: id})
     if (name) user.set({name: name})
-    if (status) user.set({status: status})
-    if (password) user.set({password: password})
     return await user.save()
 }

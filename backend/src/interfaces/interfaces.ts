@@ -11,14 +11,5 @@ export interface Time {
 export interface User {
     id: number,
     name: string,
-    email: string,
-    password: string,
-    status: string
-}
-
-export interface Token {
-    id: number,
-    token: string,
-    type: string,
-    userId: number,
+    email: string
 }

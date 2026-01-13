@@ -28,16 +28,4 @@ export class User extends Model<User> {
         allowNull: false
     })
     declare email: string
-
-    @Default('pending')
-    @Column({
-        allowNull: false,
-        type: DataType.ENUM('active', 'pending')
-    })
-    declare status: 'active' | 'pending'
-
-    @Column({
-        allowNull: false
-    })
-    declare password: string
 }
