@@ -1,11 +1,17 @@
 import {Request, Response} from 'express'
-import {getAllUsers, addUser} from '../services/user.service'
+import {getAllUsers, addUser, getUser} from '../services/user.service'
 import z from 'zod'
 
-export const getUsers = async (req: Request, res: Response) => {
-    const users = await getAllUsers()
+export const getAllUsersController = async (req: Request, res: Response) => {
+    res.json(await getAllUsers())
+}
 
-    res.json(users)
+export const getUserController = async (req: Request, res: Response)=> {
+    const user = await getUser()
+    const session = {
+        user: user
+    }
+    res.json(session)
 }
 
 export const addUserController = async (req: Request, res: Response) => {

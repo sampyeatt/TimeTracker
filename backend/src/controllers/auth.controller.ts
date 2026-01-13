@@ -26,12 +26,3 @@ export const registerController = async (req: Request, res: Response) => {
     return res.status(201).json({message: 'User registered successfully'})
 
 }
-
-export const getUserRoleController = async (req: Request, res: Response) => {
-    if (!req.params.userId) return res.status(400).json({message: 'UserId parameter is required'})
-    const {userId} = req.params
-    const user = await getAllById(+userId)
-    if (!user) return res.status(404).json({message: 'User not found'})
-    const role = user.get('role')
-    return res.status(200).json({role})
-}
