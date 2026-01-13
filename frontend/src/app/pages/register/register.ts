@@ -30,7 +30,15 @@ export class RegisterComponent {
         .subscribe({
           next:()=>{
             alert('Registration successful! Please check your email and log in.');
-            this.router.navigate(['/login'])
+            this.authService.getUser().subscribe({
+              next:(res)=>{
+                this.authService.currentUser.set(res)
+                this.router.navigate(['/dashboard'])
+              },
+              error:(err)=>{
+                console.error('Failed to get user.', err)
+              }
+            })
           },
           error: (err)=>{
             console.error('Registration failed.', err);

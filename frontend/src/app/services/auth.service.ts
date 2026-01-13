@@ -1,9 +1,8 @@
 import {HttpClient} from '@angular/common/http'
-import {computed, inject, Injectable, signal} from '@angular/core'
+import {inject, Injectable, signal} from '@angular/core'
 import {Router} from '@angular/router'
 import {environment} from '../../environments/environment.development'
 import {Session} from '../interface/api-interface'
-import {share} from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +13,6 @@ export class AuthService {
 
   private http = inject(HttpClient)
   public router = inject(Router)
-  token?: string | null = null
   auth: boolean = false
   currentUser = signal<Session | null | undefined> (undefined)
 
@@ -22,52 +20,43 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, {name, email: email, password})
   }
 
-  logout() {
-    if (typeof window !== 'undefined') {
-      this.token = null
-      sessionStorage.removeItem('jwt')
-      sessionStorage.removeItem('userId')
-      this.router.navigate(['/login'])
-    }
-  }
-
-  login(email: string, password: string) {
-    return this.http.post<Session>(`${this.apiUrl}/login`, {email: email, password}).pipe(share())
-
-  }
-
-  refreshToken(refreshToken: string) {
-    return this.http.post<Session>(`${this.apiUrl}/refresh`, {refreshToken: refreshToken})
-  }
-
-  validateToken(token: string) {
-    return this.http.post(`${this.apiUrl}/auth/validateToken`, {token: token})
-  }
-
-  saveToken(token: string) {
-    this.token = token
-    sessionStorage.setItem('jwt', token)
+  getUser() {
+    return this.http.get<Session>(`${environment.API_URL}/api/user/user`)
   }
 
   saveUser(user: Session) {
     sessionStorage.setItem('user', JSON.stringify(user))
   }
 
-  loadToken() {
-    if (typeof window !== 'undefined') {
-      const token = sessionStorage.getItem('jwt')
-      if (token) this.token = token
-      return this.token
+  setCurrentUser() {
+    const user = this.getUser().pipe()
+    console.log('Fetching user from server.', user)
+    if (user) {
+      user.subscribe({
+        next: (res) => {
+          this.currentUser.set(res)
+          return true
+        },
+        error: (err) => {
+          console.error('Failed to get user.', err)
+          return false
+        }
+      })
+      return true
+    } else {
+      return false
     }
-    return null
   }
 
   isAuthenticated() {
-    if (typeof window !== 'undefined') {
-      const token = this.loadToken()
-      if (!token || this.currentUser() === null) return false
-      return (token === this.currentUser()?.accessToken)
+    console.log('Checking authentication.', this.currentUser())
+    if (typeof window === 'undefined') {
+      if (!this.currentUser()) {
+        console.log('User is not authenticated. Fetching user from server.')
+        return this.setCurrentUser()
+      }
+      return (!!this.currentUser())
     }
-    return false
+    return (!!this.currentUser())
   }
 }

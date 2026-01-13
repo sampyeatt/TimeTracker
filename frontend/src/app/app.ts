@@ -23,7 +23,10 @@ export class App implements OnInit{
         if (currUser) {
           this.authSercices.currentUser.set(JSON.parse(currUser))
         } else {
-          this.authSercices.currentUser.set(null)
+          const valid = this.authSercices.setCurrentUser()
+          if (!valid) {
+            this.authSercices.currentUser.set(null)
+          }
         }
       }
     }
