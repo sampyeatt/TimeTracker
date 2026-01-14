@@ -4,8 +4,8 @@ const path = require('node:path')
 function createWindow () {
   const size = screen.getPrimaryDisplay().workAreaSize
   const win = new BrowserWindow({
-    x: 0,
-    y: 0,
+    x: 250,
+    y: 250,
     width: size.width/2,
     height: size.height/2,
     webPreferences: {
@@ -13,7 +13,7 @@ function createWindow () {
       contextIsolation: true,
     }
   })
-  win.loadFile(path.join(__dirname, '../frontend/dist/frontend/browser/index.csr.html'))
+  win.loadFile(path.join(__dirname, './dist/frontend/browser/index.csr.html'))
   // win.loadURL('http://localhost:4200')
 }
 

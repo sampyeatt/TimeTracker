@@ -10,7 +10,7 @@ import {AuthService} from './services/auth.service'
   styleUrl: './app.css'
 })
 export class App implements OnInit{
-  protected readonly title = signal('frontend')
+  protected readonly title = signal('TimeTracker')
 
   private authSercices = inject(AuthService)
   private router = inject(Router)
