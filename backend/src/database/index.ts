@@ -1,7 +1,6 @@
 import {connection} from './connection'
 
-connection.sync({
-    logging: false
-})
+connection.sync()
+connection.options.logging = false
 
 export {connection}

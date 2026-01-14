@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "TimeTracker",
   "version": "0.1.0",
   "scripts": {
     "ng": "ng",
@@ -11,7 +11,8 @@
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
     "electron:start": "electron .",
     "electron:build-deb": "npm run electron:build && electron-builder --linux deb tar.xz",
-    "package": "electron-builder"
+    "package": "electron-builder",
+    "forge:package": "electron-forge package"
   },
   "build": {
     "appId": "TimeTrackerApp",
@@ -30,6 +31,33 @@
       "packageName": "timetracker"
     }
   },
+  "config": {
+  "forge": {
+    "packagerConfig": {},
+    "makers": [
+      {
+        "name": "@electron-forge/maker-squirrel",
+        "config": {
+          "name": "electron_quick_start"
+        }
+      },
+      {
+        "name": "@electron-forge/maker-zip",
+        "platforms": [
+          "darwin"
+        ]
+      },
+      {
+        "name": "@electron-forge/maker-deb",
+        "config": {}
+      },
+      {
+        "name": "@electron-forge/maker-rpm",
+        "config": {}
+      }
+    ]
+  }
+},
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
@@ -67,6 +95,10 @@
     "@angular/build": "^20.3.12",
     "@angular/cli": "^20.3.12",
     "@angular/compiler-cli": "^20.3.14",
+    "@electron-forge/cli": "^7.11.1",
+    "@electron-forge/maker-deb": "^7.11.1",
+    "@electron-forge/maker-squirrel": "^7.11.1",
+    "@electron-forge/maker-zip": "^7.11.1",
     "@types/express": "^5.0.5",
     "@types/jasmine": "~5.1.13",
     "@types/node": "^24.10.1",

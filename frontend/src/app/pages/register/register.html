@@ -15,20 +15,6 @@
           }
         }
       </div>
-      <div>
-        <input formControlName="password" name="password" type="password" placeholder="Password" required class="block w-full mb-4 p-2 border rounded-md"/>
-        @if (form.get('password')?.touched && form.get('password')?.errors) {
-          @if (form.get('password')?.errors?.['required']) {
-            <div class="text-red-500">Password is required</div>
-          }
-          @if (form.get('password')?.errors?.['minlength']) {
-            <div class="text-red-500">Password is too short</div>
-          }
-          @if (form.get('password')?.errors?.['pattern']) {
-            <div class="text-red-500">Password must contain at least an uppercase letter, a lowercase letter, and a number</div>
-          }
-        }
-      </div>
       <p-button type="submit" label="Register" icon="pi pi-user" class="w-full max-w-[17.35rem]" styleClass="w-full mx-auto" [disabled]="form.invalid" raised rounded/>
     </form>
   </div>

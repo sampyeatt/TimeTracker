@@ -122,13 +122,12 @@ export const resetAllTimeController = async (req: Request, res: Response) => {
     })
     const {userId} = req.body
     const times = (await getTimeByUserId(userId)).map(time => time.toJSON())
-    times.forEach(async (time) => {
+    const updatedTimes = times.map((time) => {
         time.total_time = 0
         time.running = 0
         time.current_time = 0
-        const updated = await updateTime(time)
-        if (!updated) return res.status(400).json({message: 'Time not updated', errors: updated})
+        updateTime(time)
+        return time
     })
-    const updatedTimes: Time[] = await getTimeByUserId(userId)
     res.json({message: 'All times reset', times: updatedTimes})
 }
