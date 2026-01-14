@@ -8,7 +8,6 @@ import {
     updateTime
 } from '../services/time.service'
 import z from 'zod'
-import {Time} from '../models/Time'
 
 export const getTimeByUserIdController = async (req: Request, res: Response) => {
     const schema = z.string().min(1)

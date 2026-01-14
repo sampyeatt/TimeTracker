@@ -2,7 +2,6 @@ import {Request, Response} from 'express'
 import z from 'zod'
 import {addUser, getUserByEmail} from '../services/user.service'
 
-
 export const registerController = async (req: Request, res: Response) => {
     const schema = z.object({
         name: z.string().min(1),
