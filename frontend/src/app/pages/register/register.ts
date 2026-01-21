@@ -20,17 +20,24 @@ export class RegisterComponent {
 
   form = this.fb.group({
     name: ['', [Validators.required]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$')]],
+    email: ['', [Validators.required, Validators.email]]
   })
 
   onSubmit(){
     if(this.form.valid){
-      this.authService.register(this.form.value.name as string, this.form.value.email as string, this.form.value.password as string)
+      this.authService.register(this.form.value.name as string, this.form.value.email as string)
         .subscribe({
           next:()=>{
-            alert('Registration successful! Please check your email and log in.');
-            this.router.navigate(['/login'])
+            alert('Registration successful!');
+            this.authService.getUser().subscribe({
+              next:(res)=>{
+                this.authService.currentUser.set(res)
+                this.router.navigate(['/dashboard'])
+              },
+              error:(err)=>{
+                console.error('Failed to get user.', err)
+              }
+            })
           },
           error: (err)=>{
             console.error('Registration failed.', err);

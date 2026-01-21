@@ -1,22 +1,26 @@
 import {Request, Response} from 'express'
-import {getAllUsers, addUser} from '../services/user.service'
+import {getAllUsers, addUser, getUser} from '../services/user.service'
 import z from 'zod'
-import {passwordZodRules} from '../shared/auth.util'
 
-export const getUsers = async (req: Request, res: Response) => {
-    const users = await getAllUsers()
+export const getAllUsersController = async (req: Request, res: Response) => {
+    res.json(await getAllUsers())
+}
 
-    res.json(users)
+export const getUserController = async (req: Request, res: Response)=> {
+    const user = await getUser()
+    const session = {
+        user: user
+    }
+    res.json(session)
 }
 
 export const addUserController = async (req: Request, res: Response) => {
     const schema = z.object({
         name: z.string().min(1),
-        email: z.email(),
-        password: passwordZodRules
+        email: z.email()
     })
     const schemaValidation = schema.safeParse(req.body)
     if (!schemaValidation.success) return res.status(400).json({'message': 'Invalid request body', 'errors': schemaValidation.error.issues})
-    const {name, email, password} = req.body
-    res.json(await addUser(name, email, password))
+    const {name, email} = req.body
+    res.json(await addUser(name, email))
 }

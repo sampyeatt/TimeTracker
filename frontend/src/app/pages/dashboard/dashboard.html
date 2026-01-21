@@ -1,7 +1,7 @@
 <div class="">
   <div class="flex justify-center">
     <div class="p-3">
-      <p-button class="w-full max-w-[17.35rem]" (onClick)="this.showDialog()" pRipple><i class="pi pi-plus"></i> Add New Client</p-button>
+      <p-button class="w-full max-w-[17.35rem]" (onClick)="this.showDialog()" pRipple><i class="pi pi-plus"></i> New Client</p-button>
       <p-dialog header="New Time" [(visible)]="visible" [modal]="true" [style]="{ width: '25rem' }">
         <div class="p-3">
           <p-floatlabel variant="on">
@@ -30,7 +30,7 @@
               <ng-template #body let-time>
                 <tr>
                   <td style="width:20%">{{ time.client_name }}</td>
-                  <td>{{ (Math.ceil((time.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
+                  <td>{{ (Math.ceil(((time.total_time - 300000) / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
                 </tr>
               </ng-template>
               <ng-template #footer>
@@ -76,17 +76,17 @@
   @if (this.times().length > 0) {
     <p-dataView #dv [value]="this.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="flex justify-center p-3">
       <ng-template #grid let-time pTemplate="gridItem">
-        <div class="grid grid-cols-5 gap-2 max-w-[70rem]">
+        <div class="grid grid-cols-5 gap-2">
           @for (t of this.times(); track t.id) {
             <div class="p-2">
               @if (!t.running) {
                 <p-button outlined (onClick)="this.startTime(t.id)" pRipple rounded>
-                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours<br>{{t.key}}</p>
+                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours<br>{{t.key.replace('Numpad', 'NP')}}</p>
                 </p-button>
               }
               @if (t.running) {
                 <p-button raised (onClick)="this.stopTime(t.id)" pRipple rounded>
-                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours<br>{{t.key}}</p>
+                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours<br>{{t.key.replace('Numpad', 'NP')}}</p>
                 </p-button>
               }
             </div>

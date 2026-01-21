@@ -8,7 +8,6 @@ import {
     updateTime
 } from '../services/time.service'
 import z from 'zod'
-import {Time} from '../models/Time'
 
 export const getTimeByUserIdController = async (req: Request, res: Response) => {
     const schema = z.string().min(1)
@@ -120,19 +119,14 @@ export const resetAllTimeController = async (req: Request, res: Response) => {
         message: 'Invalid request body',
         errors: schemaValidation.error.issues
     })
-    console.log('req.body: ', req.body)
     const {userId} = req.body
     const times = (await getTimeByUserId(userId)).map(time => time.toJSON())
-    console.log('times', times)
-    let updatedTimes: Time[] = []
-    times.forEach(async (time) => {
+    const updatedTimes = times.map((time) => {
         time.total_time = 0
         time.running = 0
         time.current_time = 0
-        const updated = await updateTime(time)
-        if (!updated) return res.status(400).json({message: 'Time not updated', errors: updated})
-        updatedTimes.push(updated.toJSON())
+        updateTime(time)
+        return time
     })
-    console.log('updatedTimes', updatedTimes)
     res.json({message: 'All times reset', times: updatedTimes})
 }

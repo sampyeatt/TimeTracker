@@ -6,7 +6,7 @@ import userRoutes from './routes/user.routes'
 import cors from 'cors'
 
 const app = express()
-const port: number = 3002
+const port: number = 3003
 
 
 app.use(express.json())

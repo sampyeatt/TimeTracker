@@ -1,5 +1,5 @@
 import {Component, inject, OnInit, signal} from '@angular/core'
-import {RouterOutlet} from '@angular/router'
+import {Router, RouterOutlet} from '@angular/router'
 import {NavBarComponent} from './component/nav-bar/nav-bar'
 import {AuthService} from './services/auth.service'
 
@@ -10,22 +10,18 @@ import {AuthService} from './services/auth.service'
   styleUrl: './app.css'
 })
 export class App implements OnInit{
-  protected readonly title = signal('frontend')
+  protected readonly title = signal('TimeTracker')
 
   private authSercices = inject(AuthService)
+  private router = inject(Router)
 
   ngOnInit() {
     console.log('App initialized')
 
     if (this.authSercices.currentUser() === undefined) {
-      if (typeof window !== 'undefined') {
-        const currUser = sessionStorage.getItem('user')
-        if (currUser) {
-          this.authSercices.currentUser.set(JSON.parse(currUser))
-        } else {
-          this.authSercices.currentUser.set(null)
-        }
-      }
+      if(this.authSercices.setCurrentUser())
+        this.router.navigate(['/dashboard'])
+      else this.router.navigate(['/register'])
     }
   }
 }

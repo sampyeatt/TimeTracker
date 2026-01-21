@@ -4,17 +4,16 @@ import {
     getTimeByTimeIdController,
     getTimeByUserIdController, resetAllTimeController, stopAllTimeController, updateTimeController
 } from '../controllers/time.controller'
-import {authenticateJWT} from '../shared/auth.util'
 
 const router = Router()
 
-router.get('/byUserId/:userId', authenticateJWT, getTimeByUserIdController)
-router.get('/byTimeId/:timeId', authenticateJWT, getTimeByTimeIdController)
-router.post('/newTime', authenticateJWT, addNewTimeController)
-router.put('/updateTime', authenticateJWT, updateTimeController)
-router.put('/stopTime', authenticateJWT, stopAllTimeController)
-router.put('/resetTime', authenticateJWT, resetAllTimeController)
-router.delete('/deleteTime/:timeId', authenticateJWT, deleteTimeController)
+router.get('/byUserId/:userId', getTimeByUserIdController)
+router.get('/byTimeId/:timeId', getTimeByTimeIdController)
+router.post('/newTime', addNewTimeController)
+router.put('/updateTime', updateTimeController)
+router.put('/stopTime', stopAllTimeController)
+router.put('/resetTime', resetAllTimeController)
+router.delete('/deleteTime/:timeId', deleteTimeController)
 
 
 export default router

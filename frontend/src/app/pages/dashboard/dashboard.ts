@@ -46,6 +46,7 @@ export class DashboardComponent implements OnInit {
   invalidKey: boolean = false
   endOfDayTimes: Time[] = []
   endOfDayTimesTotal: number = 0
+  orderedList: Time[][] = [[]]
 
   ngOnInit() {
     this.getTime()
@@ -148,9 +149,9 @@ export class DashboardComponent implements OnInit {
     this.timeService.stopAllTime(user.user.userId).subscribe({
       next: (res) => {
         this.times.set(res.times)
-        this.endOfDayTimes = this.times().filter(time => time.total_time != 0)
+        this.endOfDayTimes = this.times().filter(time => (time.total_time - 300000) > 0)
         this.endOfDayTimesTotal = this.endOfDayTimes.map(value => {
-          return (Math.ceil((value.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2)
+          return (Math.ceil(((value.total_time - 300000) / (1000 * 60 * 60)) * 2) / 2).toFixed(2)
         }).reduce((a, b) => parseFloat(a.toString()) + parseFloat(b.toString()), 0)
         console.log(this.endOfDayTimesTotal)
         this.endDayDialog = true

@@ -22,11 +22,6 @@ export class NavBarComponent {
   todaysDate = new Date().toLocaleDateString().split('T')[0]
 
   get authenticated(){
-    return this.authService.isAuthenticated();
-  }
-
-  logout(){
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    return !!this.authService.currentUser()
   }
 }
