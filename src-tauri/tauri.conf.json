@@ -1,18 +1,18 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "timetracker2",
+  "productName": "timetracker",
   "version": "0.1.0",
-  "identifier": "com.sam.timetracker2",
+  "identifier": "com.sam.timetracker",
   "build": {
     "beforeDevCommand": "npm run start",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "npm run build",
-    "frontendDist": "../dist/timetracker2/browser"
+    "frontendDist": "../dist/timetracker/browser"
   },
   "app": {
     "windows": [
       {
-        "title": "timetracker2",
+        "title": "timetracker",
         "width": 800,
         "height": 600
       }
