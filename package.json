@@ -1,0 +1,51 @@
+{
+  "name": "timetracker2",
+  "version": "0.1.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "tauri": "tauri"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "^20.3.16",
+    "@angular/compiler": "^20.3.16",
+    "@angular/core": "^20.3.16",
+    "@angular/forms": "^20.3.16",
+    "@angular/platform-browser": "^20.3.16",
+    "@angular/platform-server": "^20.3.16",
+    "@angular/router": "^20.3.16",
+    "@angular/ssr": "^20.3.15",
+    "@primeuix/themes": "^2.0.3",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/vite": "^4.1.17",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-sql": "^2.3.1",
+    "express": "^5.1.0",
+    "postcss": "^8.5.6",
+    "primeicons": "^7.0.0",
+    "primeng": "^20.4.0",
+    "rxjs": "~7.8.2",
+    "tailwindcss": "^4.1.18",
+    "tslib": "^2.8.1",
+    "zone.js": "~0.15.1"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.15",
+    "@angular/cli": "^20.3.15",
+    "@angular/compiler-cli": "^20.3.16",
+    "@tauri-apps/cli": "^2",
+    "@types/node": "^24.10.1",
+    "typescript": "~5.9.3"
+  },
+  "description": "Time Tracker Application to track your work hours.",
+  "keywords": [],
+  "author": {
+    "name": "Sam Pyeatt",
+    "email": "sampyeatt@gmail.com"
+  },
+  "license": "ISC"
+}
