@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
         provideZonelessChangeDetection(),
         provideRouter(routes),
         provideAnimationsAsync(),
-        provideClientHydration(),
+        provideClientHydration(withEventReplay()),
         providePrimeNG({
             ripple: true,
             theme: {
