@@ -58,7 +58,7 @@
                 <td style="width:20%">{{ time.client_name }}</td>
                 <td>{{ (Math.ceil((time.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
                 <td>
-                  <p-button type="button" pCancelEditableRow (onClick)="this.deleteTimes(time)" text rounded severity="warn" pTooltip="Delete Time">
+                  <p-button type="button" pCancelEditableRow (onClick)="this.deleteTimes(time)" text rounded severity="warn">
                     <i class="pi pi-trash"></i>
                   </p-button>
                 </td>
@@ -76,7 +76,7 @@
   @if (this.times().length > 0) {
     <p-dataView #dv [value]="this.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="flex justify-center p-3">
       <ng-template #grid let-time pTemplate="gridItem">
-        <div class="grid grid-cols-5 gap-2">
+        <div class="grid grid-cols-4 gap-2">
           @for (t of this.times(); track t.id) {
             <div class="p-2">
               @if (!t.running) {
@@ -85,7 +85,7 @@
                 </p-button>
               }
               @if (t.running) {
-                <p-button raised (onClick)="this.stopTime()" pRipple rounded>
+                <p-button raised (onClick)="this.stopTime(t.id, t.total_time, t.current_time)" pRipple rounded>
                   <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours<br>{{t.key.replace('Numpad', 'NP')}}</p>
                 </p-button>
               }

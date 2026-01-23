@@ -48,14 +48,12 @@ export class DashboardComponent implements OnInit {
     endOfDayTimesTotal: number = 0
 
     ngOnInit() {
-        console.log('Dashboard initialized')
         this.getTime()
         this.cdref.markForCheck()
     }
 
     getTime() {
         let user = this.authService.currentUser()
-        console.log('Get Time User', user)
         if (!user) {
             this.authService.setCurrentUser().then(auth => {
                 if (auth) {
@@ -64,14 +62,15 @@ export class DashboardComponent implements OnInit {
                     this.timeService.getTimeUserId(user.userId).then(res => {
                         this.times.set(res)
                         this.cdref.markForCheck()
+                        return true
                     })
                 }
             })
         } else {
             this.timeService.getTimeUserId(user.userId).then(res => {
-                console.log('Get Time Result', res)
                 this.times.set(res)
                 this.cdref.markForCheck()
+                return true
             })
         }
     }
@@ -80,10 +79,10 @@ export class DashboardComponent implements OnInit {
         const user = this.authService.currentUser()
         if (!user) return
         const runningTimeIndex = this.times().findIndex(time => time.running === 1)
+        const runningTime = this.times()[runningTimeIndex]
         if (runningTimeIndex !== -1) {
             // Stop currently running time
-            this.timeService.stopTime(user.userId).then(res => {
-                console.log('Update Running Time Result', res)
+            this.timeService.stopTime(user.userId, runningTime.total_time, runningTime.current_time, runningTime.id).then(res => {
                 this.timeService.getTimeTimeId(timeId).then(res => {
                     if (res) {
                         this.times()[runningTimeIndex] = res
@@ -98,10 +97,10 @@ export class DashboardComponent implements OnInit {
         })
     }
 
-    stopTime() {
+    stopTime(timeId: number, totalTime: number = 0, currentTime: number = 0) {
         const user = this.authService.currentUser()
         if (!user) return
-        this.timeService.stopTime(user?.userId).then(res => {
+        this.timeService.stopTime(user?.userId, totalTime, currentTime, timeId).then(res => {
             this.getTime()
         })
     }
@@ -112,11 +111,9 @@ export class DashboardComponent implements OnInit {
 
     newTime() {
         const user = this.authService.currentUser()
-        console.log('netime user', user)
         if (!user) return
         console.log(this.clientName + ' ' + this.key)
         this.timeService.newTime(user.userId, this.clientName, this.key).then(res => {
-            console.log('New Time Result', res)
             if (res && res.lastInsertId) {
                 this.timeService.getTimeTimeId(res.lastInsertId).then(res => {
                     if (res) {
@@ -147,30 +144,40 @@ export class DashboardComponent implements OnInit {
     endDay() {
         const user = this.authService.currentUser()
         if (!user) return
-        this.timeService.stopTime(user.userId).then(res => {
-                this.getTime()
-                this.endOfDayTimes = this.times().filter(time => (time.total_time - 300000) > 0)
-                this.endOfDayTimesTotal = this.endOfDayTimes.map(value => {
-                    return (Math.ceil(((value.total_time - 300000) / (1000 * 60 * 60)) * 2) / 2).toFixed(2)
-                }).reduce((a, b) => parseFloat(a.toString()) + parseFloat(b.toString()), 0)
-                console.log(this.endOfDayTimesTotal)
-                this.endDayDialog = true
-                this.cdref.markForCheck()
+        const times = this.times().filter(time => time.running === 1)
+        if (times.length === 0) {
+            this.calculateEndOfDayTotals()
+        }
+        times.forEach(time => {
+            this.timeService.stopTime(user.userId, time.total_time, time.current_time, time.id).then(res => {
+                this.calculateEndOfDayTotals()
+            })
         })
+    }
+
+    calculateEndOfDayTotals() {
+        this.getTime()
+        this.endOfDayTimes = this.times().filter(time => (time.total_time - 300000) > 0)
+        this.endOfDayTimesTotal = this.endOfDayTimes.map(value => {
+            return (Math.ceil(((value.total_time - 300000) / (1000 * 60 * 60)) * 2) / 2).toFixed(2)
+        }).reduce((a, b) => parseFloat(a.toString()) + parseFloat(b.toString()), 0)
+        console.log(this.endOfDayTimesTotal)
+        this.endDayDialog = true
+        this.cdref.markForCheck()
     }
 
     resetTimes() {
         const user = this.authService.currentUser()
         if (!user) return
         this.timeService.resetAllTime(user.userId).then(res => {
-                this.getTime()
-                this.endDayDialog = false
-                this.cdref.markForCheck()
+            this.getTime()
+            this.endDayDialog = false
+            this.cdref.markForCheck()
         })
     }
 
     deleteTimes(time: Time) {
-        this.timeService.deleteTime(time.id).then(res =>{
+        this.timeService.deleteTime(time.id).then(res => {
             this.getTime()
         })
     }
@@ -182,7 +189,7 @@ export class DashboardComponent implements OnInit {
         if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
             const time = this.times().find(time => time.key === event.code)
             if (!time) return
-            if (time.running === 1) this.stopTime()
+            if (time.running === 1) this.stopTime(time.id, time.total_time, time.current_time)
             else this.startTime(time.id)
         }
     }
