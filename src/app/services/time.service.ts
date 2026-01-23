@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core'
 import {Time} from '../interface/api-interface'
-import Database, {QueryResult} from '@tauri-apps/plugin-sql'
+import Database from '@tauri-apps/plugin-sql'
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +17,6 @@ export class TimeService {
     }
 
     async getTimeUserId(userId: number) {
-        console.log('get time user id', userId)
         if (this.db) {
             return await this.db.select<Time[]>(`SELECT *
                                                  FROM times
@@ -53,10 +52,8 @@ export class TimeService {
     }
 
     async startTime(id: number, running: number) {
-        console.log('start time', id, running)
         if (this.db) {
             const date = Date.now()
-            console.log('start time date', date)
             return await this.db.execute('UPDATE times SET current_time = $1, running = $2 WHERE id = $3', [date, running, id])
         }
         return null
@@ -65,10 +62,6 @@ export class TimeService {
     async stopTime(userId: number, totalTime: number = 0, currentTime: number = 0, timeId: number) {
         if (this.db) {
             const date = Date.now()
-            console.log('stop time', date/100000)
-            console.log('stop time total', totalTime/100000)
-            console.log('stop time current', currentTime/100000)
-            console.log('Total Time', (totalTime + (date - currentTime)) * 0.00001667)
             await this.db.execute(`UPDATE times SET running = 0, total_time =  $1 + ($2 - $3) WHERE userId = $4 AND id = $5`, [totalTime, date, currentTime, userId, timeId])
         }
     }

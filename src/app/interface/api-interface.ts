@@ -19,13 +19,3 @@ export interface Time {
     current_time: number,
     total_time: number
 }
-
-export interface UpdateResponse {
-    message: string,
-    time: Time
-}
-
-export interface StopResponse {
-    message: string,
-    times: Time[]
-}

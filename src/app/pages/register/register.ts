@@ -25,7 +25,6 @@ export class RegisterComponent {
 
   onSubmit(){
     if(this.form.valid){
-      console.log('reg attempt', this.form.value)
       this.authService.register(this.form.value.name as string, this.form.value.email as string).then(r =>{
         this.authService.setCurrentUser().then(auth => {
           if (auth) this.router.navigate(['/dashboard'])
