@@ -11,11 +11,11 @@ export interface User {
 }
 
 export interface Time {
-    id: number,
-    client_name: string,
-    key: string,
-    userId: number,
-    running: number,
-    current_time: number,
+    id: number
+    client_name: string
+    key: string
+    userId: number
+    running: number
+    current_time: number
     total_time: number
 }

@@ -1,14 +1,10 @@
-import {
-    ApplicationConfig,
-    provideBrowserGlobalErrorListeners,
-    provideZonelessChangeDetection
-} from '@angular/core'
-import {provideRouter} from '@angular/router'
-import {DarkMode} from './component/theme/theme'
-import {providePrimeNG} from 'primeng/config'
-import {provideClientHydration, withEventReplay} from '@angular/platform-browser'
-import {routes} from './app.routes'
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async'
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core'
+import { provideRouter } from '@angular/router'
+import { darkMode } from './component/theme/theme'
+import { providePrimeNG } from 'primeng/config'
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser'
+import { routes } from './app.routes'
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -20,7 +16,7 @@ export const appConfig: ApplicationConfig = {
         providePrimeNG({
             ripple: true,
             theme: {
-                preset: DarkMode,
+                preset: darkMode
             }
         })
     ]
