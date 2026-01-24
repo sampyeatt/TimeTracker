@@ -14,7 +14,7 @@ export class AuthService {
 
     /**
      * Constructor to initialize database connection
-     * @returns
+     * @returns Database - database connection
      */
     private async initDB() {
         return await Database.load('sqlite:test.db')
