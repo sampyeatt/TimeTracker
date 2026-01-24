@@ -65,6 +65,7 @@ jobs:
         with:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: 'App v__VERSION__'
+          releaseId: __RELEASE_ID__
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
