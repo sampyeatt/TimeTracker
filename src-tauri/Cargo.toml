@@ -1,6 +1,6 @@
 [package]
 name = "timetracker"
-version = "1.1.0"
+version = "1.2.0"
 description = "TimeTracker Tauri Application"
 authors = ["Sam Pyeatt"]
 edition = "2021"
