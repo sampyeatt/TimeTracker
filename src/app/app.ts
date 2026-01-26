@@ -21,7 +21,14 @@ export class App implements OnInit {
      * Constructor to Set theme to dark
      */
     constructor() {
-        // setTheme('dark')
+        // this.setThemeNG()
+    }
+
+    /**
+     * Set theme to dark
+     */
+    async setThemeNG() {
+        await setTheme('dark')
     }
 
     /**
