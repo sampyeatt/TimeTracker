@@ -23,7 +23,7 @@ export class TimeService {
      * Initialize database connection
      */
     private async initDB() {
-        this.db = await Database.load('sqlite:test.db')
+        this.db = await Database.load('sqlite:timetracker.db')
     }
 
     /**

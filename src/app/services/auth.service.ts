@@ -17,7 +17,7 @@ export class AuthService {
      * @returns Database - database connection
      */
     private async initDB() {
-        return await Database.load('sqlite:test.db')
+        return await Database.load('sqlite:timetracker.db')
     }
 
     /**
