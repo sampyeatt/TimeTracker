@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, signal } from '@angular/core'
 import { Time } from '../interface/api-interface'
 import Database from '@tauri-apps/plugin-sql'
 

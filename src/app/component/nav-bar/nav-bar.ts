@@ -1,22 +1,37 @@
-import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { ChangeDetectorRef, Component, inject } from '@angular/core'
 import { AuthService } from '../../services/auth.service'
-import { RouterModule } from '@angular/router'
-import { ButtonModule } from 'primeng/button'
+import { TimeService } from '../../services/time.service'
+import { Time } from '../../interface/api-interface'
+import { DialogService } from '../../services/dialog.service'
+import { Button } from 'primeng/button'
+import { Dialog } from 'primeng/dialog'
+import { FloatLabel } from 'primeng/floatlabel'
+import { FormsModule } from '@angular/forms'
+import { InputText } from 'primeng/inputtext'
+import { Ripple } from 'primeng/ripple'
+import { TableModule } from 'primeng/table'
+import {RouterLink} from '@angular/router'
 
 /**
  * Nav bar component.
  */
 @Component({
     selector: 'app-nav-bar',
-    imports: [CommonModule, RouterModule, ButtonModule],
+    imports: [Button, Dialog, FloatLabel, FormsModule, InputText, Ripple, TableModule, RouterLink],
     templateUrl: './nav-bar.html',
     styleUrl: './nav-bar.css'
 })
 export class NavBarComponent {
-    public authService = inject(AuthService)
-
-    todaysDate = new Date().toLocaleDateString().split('T')[0]
+    private authService = inject(AuthService)
+    private timeService = inject(TimeService)
+    public dialogService = inject(DialogService)
+    private cdref = inject(ChangeDetectorRef)
+    clientName: string = ''
+    invalidKey: boolean = false
+    key: string = ''
+    keyDisp: string = ''
+    endOfDayTimes: Time[] = []
+    endOfDayTimesTotal: number = 0
 
     /**
      * Getter to check if user is authenticated.
@@ -25,4 +40,140 @@ export class NavBarComponent {
     get authenticated() {
         return !!this.authService.currentUser()
     }
+
+    /**
+     * Get all times for the current user. If the user is not authenticated, get the user from the database and set the user in the auth service.
+     */
+    getTime() {
+        const user = this.authService.currentUser()
+        if (!user) {
+            this.authService.setCurrentUser().then((auth) => {
+                if (auth) {
+                    const user = this.authService.currentUser()
+                    if (!user) return
+                    this.timeService.getTimeUserId(user.userId).then((res) => {
+                        console.log('data', res)
+                        this.dialogService.times.set(res)
+                        this.cdref.markForCheck()
+                        return true
+                    })
+                }
+            })
+        } else {
+            this.timeService.getTimeUserId(user.userId).then((res) => {
+                console.log('data', res)
+                this.dialogService.times.set(res)
+                this.cdref.markForCheck()
+                return true
+            })
+        }
+    }
+
+    /**
+     * trigger to show dialog window
+     */
+    showDialog() {
+        this.dialogService.newTimeDialog = true
+    }
+
+    /**
+     * Get the keyboard input and check if it is a valid key.
+     * @param event - keyboard event
+     */
+    getKeyboardInput(event: KeyboardEvent) {
+        const keyArray = this.dialogService.times().map((time) => time.key)
+        if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
+            this.invalidKey = true
+            this.cdref.markForCheck()
+            return
+        } else {
+            this.invalidKey = false
+            this.key = event.code
+            this.cdref.markForCheck()
+        }
+    }
+
+    /**
+     * Add a new time entry to the database.
+     */
+    newTime() {
+        const user = this.authService.currentUser()
+        if (!user) return
+        console.log(this.clientName + ' ' + this.key)
+        this.timeService.newTime(user.userId, this.clientName, this.key).then((res) => {
+            if (res && res.lastInsertId !== undefined) {
+                this.timeService.getTimeTimeId(res.lastInsertId).then((res) => {
+                    if (res) {
+                        this.dialogService.times().push(res)
+                        this.dialogService.times().sort((a, b) => a.order_index - b.order_index)
+                        this.clientName = ''
+                        this.key = ''
+                        this.keyDisp = ''
+                        this.cdref.markForCheck()
+                    }
+                })
+            }
+        })
+    }
+
+    /**
+     * End the day by stopping all running time entries and calculating the total time for the day.
+     */
+    endDay() {
+        const user = this.authService.currentUser()
+        if (!user) return
+        const times = this.dialogService.times().filter((time) => time.running === 1)
+        if (times.length === 0) {
+            this.calculateEndOfDayTotals()
+        }
+        times.forEach((time) => {
+            this.timeService.stopTime(user.userId, time.total_time, time.current_time, time.id).then((res) => {
+                this.calculateEndOfDayTotals()
+            })
+        })
+    }
+
+    /**
+     * Calculate the total time for the day by filtering all time entries that have a total time greater than 30 minutes.
+     * The total time is rounded up to the nearest hour.
+     * The total time is then added to the endOfDayTimes array and the total time for the day is calculated by summing up all the values in the endOfDayTimes array.
+     * The total time for the day is then displayed in the end day dialog window.
+     */
+    calculateEndOfDayTotals() {
+        this.getTime()
+        this.endOfDayTimes = this.dialogService.times().filter((time) => time.total_time - 300000 > 0)
+        this.endOfDayTimesTotal = this.endOfDayTimes
+            .map((value) => {
+                return (Math.ceil(((value.total_time - 300000) / (1000 * 60 * 60)) * 2) / 2).toFixed(2)
+            })
+            .reduce((a, b) => parseFloat(a.toString()) + parseFloat(b.toString()), 0)
+        console.log(this.endOfDayTimesTotal)
+        this.dialogService.endDayDialog = true
+        this.cdref.markForCheck()
+    }
+
+    /**
+     * Reset all time entries for the current user.
+     */
+    resetTimes() {
+        const user = this.authService.currentUser()
+        if (!user) return
+        this.timeService.resetAllTime(user.userId).then((res) => {
+            this.getTime()
+            this.dialogService.endDayDialog = false
+            this.cdref.markForCheck()
+        })
+    }
+
+    /**
+     * Delete a time entry from the database.
+     * @param time - time entry to be deleted
+     */
+    deleteTimes(time: Time) {
+        this.timeService.deleteTime(time.id).then((res) => {
+            this.getTime()
+        })
+    }
+
+    protected readonly Math = Math
 }
