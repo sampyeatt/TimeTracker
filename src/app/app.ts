@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core'
 import { RouterOutlet, Router } from '@angular/router'
 import { NavBarComponent } from './component/nav-bar/nav-bar'
 import { AuthService } from './services/auth.service'
-import { setTheme } from '@tauri-apps/api/app'
 
 /**
  * Main application component
@@ -16,20 +15,6 @@ import { setTheme } from '@tauri-apps/api/app'
 export class App implements OnInit {
     private authSercices = inject(AuthService)
     private router = inject(Router)
-
-    /**
-     * Constructor to Set theme to dark
-     */
-    constructor() {
-        // this.setThemeNG()
-    }
-
-    /**
-     * Set theme to dark
-     */
-    async setThemeNG() {
-        await setTheme('dark')
-    }
 
     /**
      * oninit to check if user is authenticated and redirect to dashboard if so

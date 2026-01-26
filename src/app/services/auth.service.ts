@@ -23,7 +23,6 @@ export class AuthService {
     /**
      * Register a new user in the database. This will create a new user entry in the database.
      * @param name - name of the user
-     * @param email - email address of the user
      */
     async register(name: string) {
         const db = await this.initDB()

@@ -1,9 +1,8 @@
 import { Component, inject } from '@angular/core'
 import { AuthService } from '../../services/auth.service'
 import { Router } from '@angular/router'
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Button } from 'primeng/button'
-import { CommonModule } from '@angular/common'
 
 /**
  * Register page component
@@ -11,7 +10,7 @@ import { CommonModule } from '@angular/common'
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [FormsModule, Button, ReactiveFormsModule, CommonModule],
+    imports: [ReactiveFormsModule, Button],
     templateUrl: './register.html',
     styleUrl: './register.css'
 })
