@@ -14,8 +14,7 @@ pub fn run() {
             description: "Create User Table",
             sql: "CREATE TABLE IF NOT EXISTS users (
             userId INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
-            name TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL
+            name TEXT NOT NULL
             )",
             kind: MigrationKind::Up,
         },
@@ -25,10 +24,11 @@ pub fn run() {
             sql: "CREATE TABLE IF NOT EXISTS times (
             id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,
             client_name TEXT NOT NULL,
-            key TEXT NOT NULL,
+            key TEXT UNIQUE NOT NULL,
             total_time INTEGER,
             current_time INTEGER,
             running INTEGER NOT NULL DEFAULT 0,
+            order_index INTEGER UNIQUE NOT NULL,
             userId INTEGER NOT NULL,
             FOREIGN KEY (userId) REFERENCES users (userId)
             )",
@@ -37,7 +37,7 @@ pub fn run() {
     ];
     tauri::Builder::default()
         .plugin(tauri_plugin_sql::Builder::default()
-            .add_migrations("sqlite:timetracker.db", migrations)
+            .add_migrations("sqlite:timetracker-v1.db", migrations)
             .build()
         )
         .plugin(tauri_plugin_opener::init())

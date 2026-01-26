@@ -4,16 +4,6 @@
     <form (submit)="onSubmit()" [formGroup]="form">
       <div>
         <input formControlName="name" name="name" type="text" placeholder="UserName" required class="block w-full mb-3 p-2 border rounded-md"/>
-        <input formControlName="email" name="email" type="text" placeholder="Email" required class="block w-full mb-3 p-2 border rounded-md"/>
-
-        @if (form.get('email')?.touched && form.get('email')?.errors) {
-          @if (form.get('email')?.errors?.['required']) {
-            <div class="text-red-500">Email is required</div>
-          }
-          @if (form.get('email')?.errors?.['email']) {
-            <div class="text-red-500">Email is invalid</div>
-          }
-        }
       </div>
       <p-button type="submit" label="Register" icon="pi pi-user" class="w-full max-w-[17.35rem]" styleClass="w-full mx-auto" [disabled]="form.invalid" raised rounded/>
     </form>

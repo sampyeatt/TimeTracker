@@ -1,13 +1,11 @@
 export interface Session {
     userId: number
     name: string
-    email: string
 }
 
 export interface User {
     userId: number
     name: string
-    email: string
 }
 
 export interface Time {
@@ -18,4 +16,5 @@ export interface Time {
     running: number
     current_time: number
     total_time: number
+    order_index: number
 }

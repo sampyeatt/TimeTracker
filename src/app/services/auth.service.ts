@@ -17,7 +17,7 @@ export class AuthService {
      * @returns Database - database connection
      */
     private async initDB() {
-        return await Database.load('sqlite:timetracker.db')
+        return await Database.load('sqlite:timetracker-v1.db')
     }
 
     /**
@@ -25,9 +25,9 @@ export class AuthService {
      * @param name - name of the user
      * @param email - email address of the user
      */
-    async register(name: string, email: string) {
+    async register(name: string) {
         const db = await this.initDB()
-        await db.execute('INSERT INTO users (name, email) VALUES (?, ?)', [name, email])
+        await db.execute('INSERT INTO users (name) VALUES (?)', [name])
     }
 
     /**
@@ -36,7 +36,7 @@ export class AuthService {
      */
     async getUser(): Promise<User | null> {
         const db = await this.initDB()
-        const user = await db.select<User[]>('SELECT userId, name, email FROM users')
+        const user = await db.select<User[]>('SELECT userId, name FROM users')
         return user[0] ?? null
     }
 
