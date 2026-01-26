@@ -5,13 +5,14 @@ import { DialogService } from '../../services/dialog.service'
 import { Button } from 'primeng/button'
 import { DataView } from 'primeng/dataview'
 import { Ripple } from 'primeng/ripple'
+import { PrimeTemplate } from 'primeng/api'
 
 /**
  * Dashboard page component.
  */
 @Component({
     selector: 'app-dashboard',
-    imports: [Button, DataView, Ripple],
+    imports: [Button, DataView, Ripple, PrimeTemplate],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css'
 })
@@ -20,7 +21,6 @@ export class DashboardComponent implements OnInit {
     private authService = inject(AuthService)
     public dialogService = inject(DialogService)
     private cdref = inject(ChangeDetectorRef)
-    protected readonly Math = Math
 
     /**
      * On Init get all times for the current user
@@ -41,7 +41,6 @@ export class DashboardComponent implements OnInit {
                     const user = this.authService.currentUser()
                     if (!user) return
                     this.timeService.getTimeUserId(user.userId).then((res) => {
-                        console.log('data', res)
                         this.dialogService.times.set(res)
                         this.cdref.markForCheck()
                         return true
@@ -50,7 +49,6 @@ export class DashboardComponent implements OnInit {
             })
         } else {
             this.timeService.getTimeUserId(user.userId).then((res) => {
-                console.log('data', res)
                 this.dialogService.times.set(res)
                 this.cdref.markForCheck()
                 return true
@@ -72,7 +70,7 @@ export class DashboardComponent implements OnInit {
             // Stop currently running time
             this.timeService
                 .stopTime(user.userId, runningTime.total_time, runningTime.current_time, runningTime.id)
-                .then((res) => {
+                .then(() => {
                     this.timeService.getTimeTimeId(timeId).then((res) => {
                         if (res) {
                             this.dialogService.times()[runningTimeIndex] = res
@@ -97,7 +95,7 @@ export class DashboardComponent implements OnInit {
     stopTime(timeId: number, totalTime: number = 0, currentTime: number = 0) {
         const user = this.authService.currentUser()
         if (!user) return
-        this.timeService.stopTime(user?.userId, totalTime, currentTime, timeId).then((res) => {
+        this.timeService.stopTime(user?.userId, totalTime, currentTime, timeId).then(() => {
             this.getTime()
         })
     }

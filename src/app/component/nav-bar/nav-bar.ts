@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms'
 import { InputText } from 'primeng/inputtext'
 import { Ripple } from 'primeng/ripple'
 import { TableModule } from 'primeng/table'
-import {RouterLink} from '@angular/router'
+import { RouterLink } from '@angular/router'
 
 /**
  * Nav bar component.
@@ -127,7 +127,7 @@ export class NavBarComponent {
             this.calculateEndOfDayTotals()
         }
         times.forEach((time) => {
-            this.timeService.stopTime(user.userId, time.total_time, time.current_time, time.id).then((res) => {
+            this.timeService.stopTime(user.userId, time.total_time, time.current_time, time.id).then(() => {
                 this.calculateEndOfDayTotals()
             })
         })
@@ -158,7 +158,7 @@ export class NavBarComponent {
     resetTimes() {
         const user = this.authService.currentUser()
         if (!user) return
-        this.timeService.resetAllTime(user.userId).then((res) => {
+        this.timeService.resetAllTime(user.userId).then(() => {
             this.getTime()
             this.dialogService.endDayDialog = false
             this.cdref.markForCheck()
@@ -170,7 +170,7 @@ export class NavBarComponent {
      * @param time - time entry to be deleted
      */
     deleteTimes(time: Time) {
-        this.timeService.deleteTime(time.id).then((res) => {
+        this.timeService.deleteTime(time.id).then(() => {
             this.getTime()
         })
     }
