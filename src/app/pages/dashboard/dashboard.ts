@@ -1,16 +1,16 @@
-import { ChangeDetectorRef, Component, HostListener, inject, OnInit, signal } from '@angular/core'
-import { Time } from '../../interface/api-interface'
-import { TimeService } from '../../services/time.service'
-import { AuthService } from '../../services/auth.service'
-import { TableModule } from 'primeng/table'
-import { ButtonModule } from 'primeng/button'
-import { CommonModule } from '@angular/common'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { RippleModule } from 'primeng/ripple'
-import { DialogModule } from 'primeng/dialog'
-import { FloatLabelModule } from 'primeng/floatlabel'
-import { InputTextModule } from 'primeng/inputtext'
-import { DataViewModule } from 'primeng/dataview'
+import {ChangeDetectorRef, Component, HostListener, inject, OnInit, signal} from '@angular/core'
+import {Time} from '../../interface/api-interface'
+import {TimeService} from '../../services/time.service'
+import {AuthService} from '../../services/auth.service'
+import {TableModule} from 'primeng/table'
+import {ButtonModule} from 'primeng/button'
+import {CommonModule} from '@angular/common'
+import {FormsModule, ReactiveFormsModule} from '@angular/forms'
+import {RippleModule} from 'primeng/ripple'
+import {DialogModule} from 'primeng/dialog'
+import {FloatLabelModule} from 'primeng/floatlabel'
+import {InputTextModule} from 'primeng/inputtext'
+import {DataViewModule} from 'primeng/dataview'
 
 /**
  * Dashboard page component.
@@ -68,6 +68,7 @@ export class DashboardComponent implements OnInit {
                     const user = this.authService.currentUser()
                     if (!user) return
                     this.timeService.getTimeUserId(user.userId).then((res) => {
+                        console.log('data', res)
                         this.times.set(res)
                         this.cdref.markForCheck()
                         return true
@@ -76,6 +77,8 @@ export class DashboardComponent implements OnInit {
             })
         } else {
             this.timeService.getTimeUserId(user.userId).then((res) => {
+
+                console.log('data', res)
                 this.times.set(res)
                 this.cdref.markForCheck()
                 return true
@@ -146,6 +149,8 @@ export class DashboardComponent implements OnInit {
                 this.timeService.getTimeTimeId(res.lastInsertId).then((res) => {
                     if (res) {
                         this.times().push(res)
+                        this.times().sort((a, b) => a.order_index - b.order_index)
+                        console.log('SORT', this.times())
                         this.clientName = ''
                         this.key = ''
                         this.keyDisp = ''

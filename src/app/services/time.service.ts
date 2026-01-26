@@ -23,7 +23,7 @@ export class TimeService {
      * Initialize database connection
      */
     private async initDB() {
-        this.db = await Database.load('sqlite:timetracker.db')
+        this.db = await Database.load('sqlite:timetracker-v1.db')
     }
 
     /**
@@ -34,9 +34,10 @@ export class TimeService {
     async getTimeUserId(userId: number) {
         if (this.db) {
             return await this.db.select<Time[]>(
-                `SELECT *
-                                                 FROM times
-                                                 WHERE userId = $1`,
+                `SELECT *, TRIM(key, 'F') as trim
+                 FROM times
+                 WHERE userId = $1
+                 ORDER BY order_index`,
                 [userId]
             )
         }
@@ -52,30 +53,13 @@ export class TimeService {
         if (this.db) {
             const time = await this.db.select<Time[]>(
                 `SELECT *
-                                                 FROM times
-                                                 WHERE id = $1`,
+                 FROM times
+                 WHERE id = $1`,
                 [id]
             )
             return time[0]
         }
         return null
-    }
-
-    /**
-     * Return all active times for a given user. An active time is a time that is currently running.
-     * @param userId - user id number
-     * @returns Time[] - array of active times
-     */
-    async getActiveTimes(userId: number) {
-        if (this.db) {
-            return await this.db.select<Time[]>(
-                `SELECT *
-                                                 FROM times
-                                                 WHERE userId = $1 AND running = 1`,
-                [userId]
-            )
-        }
-        return []
     }
 
     /**
@@ -87,9 +71,10 @@ export class TimeService {
      */
     async newTime(userId: number, clientName: string, key: string) {
         if (this.db) {
+            const orderIndex = +key.replace('F', '')
             return await this.db.execute(
-                'INSERT INTO times (client_name, key, userId, total_time) VALUES ($1, $2, $3, $4)',
-                [clientName, key, userId, 0]
+                'INSERT INTO times (client_name, key, userId, total_time, order_index) VALUES ($1, $2, $3, $4, $5)',
+                [clientName, key, userId, 0, orderIndex]
             )
         }
         return null

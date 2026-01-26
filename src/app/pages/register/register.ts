@@ -21,8 +21,7 @@ export class RegisterComponent {
     fb = inject(FormBuilder)
 
     form = this.fb.group({
-        name: ['', [Validators.required]],
-        email: ['', [Validators.required, Validators.email]]
+        name: ['', [Validators.required]]
     })
 
     /**
@@ -30,7 +29,7 @@ export class RegisterComponent {
      */
     onSubmit() {
         if (this.form.valid) {
-            this.authService.register(this.form.value.name as string, this.form.value.email as string).then((r) => {
+            this.authService.register(this.form.value.name as string).then((r) => {
                 this.authService.setCurrentUser().then((auth) => {
                     if (auth) this.router.navigate(['/dashboard'])
                 })
