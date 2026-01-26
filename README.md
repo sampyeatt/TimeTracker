@@ -18,8 +18,7 @@ The downside of this was size. It was large and entirely unnecessary to have an 
 #### Young and Functional
 I was poking around for a better solution and came across Tauri. Tauri seemed like the perfect fit for this project. Lightweight, fast, and (most importantly) compatible with the front end I had already built!
 #### The Future!
-My future plans for this project are as follows:
-- Fix the themes compatibility with Tauri.
+My plans for this project are as follows:
 - Live time incrementing (Display only)
 
 #### Why are you still reading this?
