@@ -82,6 +82,7 @@ export class NavBarComponent {
      */
     getKeyboardInput(event: KeyboardEvent) {
         const keyArray = this.dialogService.times().map((time) => time.key)
+        console.log('event', event)
         if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
             this.invalidKey = true
             this.cdref.markForCheck()
@@ -89,6 +90,7 @@ export class NavBarComponent {
         } else {
             this.invalidKey = false
             this.key = event.code
+            this.keyDisp = event.code
             this.cdref.markForCheck()
         }
     }
