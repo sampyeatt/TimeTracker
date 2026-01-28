@@ -1,10 +1,10 @@
-<div class="">
+<div class="flex justify-center p-2">
   @if (this.dialogService.times().length > 0) {
-    <p-dataView #dv [value]="this.dialogService.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="flex justify-center p-3">
+    <p-dataView #dv [value]="this.dialogService.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="">
       <ng-template #grid let-time pTemplate="gridItem">
         <div class="grid grid-cols-4 gap-1">
           @for (t of this.dialogService.times(); track t.id) {
-            <div class="p-1">
+            <div class="p-2">
               @if (!t.running) {
                 <p-button outlined (onClick)="this.startTime(t.id)" pRipple rounded>
                   <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
