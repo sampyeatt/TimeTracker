@@ -52,7 +52,6 @@ export class NavBarComponent {
                     const user = this.authService.currentUser()
                     if (!user) return
                     this.timeService.getTimeUserId(user.userId).then((res) => {
-                        console.log('data', res)
                         this.dialogService.times.set(res)
                         return true
                     })
@@ -60,7 +59,6 @@ export class NavBarComponent {
             })
         } else {
             this.timeService.getTimeUserId(user.userId).then((res) => {
-                console.log('data', res)
                 this.dialogService.times.set(res)
                 return true
             })
@@ -74,7 +72,6 @@ export class NavBarComponent {
         this.dialogService.newTimeDialog = true
         if (this.dialogService.timeKeys().size === 0) {
             this.dialogService.times().map((time) => {
-                console.log('time', time)
                 if (!this.dialogService.timeKeys().has(time.key)) {
                     this.dialogService.timeKeys().add(time.key)
                 }
@@ -88,8 +85,6 @@ export class NavBarComponent {
      * @param event - keyboard event
      */
     getKeyboardInput(event: KeyboardEvent) {
-        console.log('event', event)
-        console.log('key', this.dialogService.timeKeys())
         if (event instanceof KeyboardEvent && this.dialogService.timeKeys().has(event.code)) {
             this.invalidKey = true
             this.cdref.markForCheck()
