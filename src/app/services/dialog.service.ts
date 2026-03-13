@@ -12,4 +12,5 @@ export class DialogService {
     endDayDialog = false
     deleteDialog = false
     times = signal<Time[]>([])
+    timeKeys = signal(new Set<string>())
 }

@@ -72,6 +72,15 @@ export class NavBarComponent {
      */
     showDialog() {
         this.dialogService.newTimeDialog = true
+        if (this.dialogService.timeKeys().size === 0) {
+            this.dialogService.times().map((time) => {
+                console.log('time', time)
+                if (!this.dialogService.timeKeys().has(time.key)) {
+                    this.dialogService.timeKeys().add(time.key)
+                }
+            })
+        }
+        console.log(this.dialogService.timeKeys())
     }
 
     /**
@@ -79,9 +88,9 @@ export class NavBarComponent {
      * @param event - keyboard event
      */
     getKeyboardInput(event: KeyboardEvent) {
-        const keyArray = this.dialogService.times().map((time) => time.key)
         console.log('event', event)
-        if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
+        console.log('key', this.dialogService.timeKeys())
+        if (event instanceof KeyboardEvent && this.dialogService.timeKeys().has(event.code)) {
             this.invalidKey = true
             this.cdref.markForCheck()
             return
@@ -106,6 +115,7 @@ export class NavBarComponent {
                     if (res) {
                         this.dialogService.times().push(res)
                         this.dialogService.times().sort((a, b) => a.order_index - b.order_index)
+                        this.dialogService.timeKeys().add(this.key)
                         this.clientName = ''
                         this.key = ''
                         this.keyDisp = ''
@@ -171,6 +181,7 @@ export class NavBarComponent {
      */
     deleteTimes(time: Time) {
         this.timeService.deleteTime(time.id).then(() => {
+            this.dialogService.timeKeys().delete(time.key)
             this.getTime()
             this.cdref.markForCheck()
         })

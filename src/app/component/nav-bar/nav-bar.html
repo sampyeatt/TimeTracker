@@ -19,7 +19,7 @@
             }
     </div>
     <div class="flex justify-center p-3">
-      <p-button (click)="this.dialogService.newTimeDialog = false" class="p-2" label="Cancel" severity="secondary"/>
+      <p-button (click)="this.dialogService.newTimeDialog = false; this.invalidKey = false; this.clientName = ''; this.key = ''; this.keyDisp = ''" class="p-2" label="Cancel" severity="secondary"/>
       <p-button (click)="this.dialogService.newTimeDialog = false" (onClick)="this.newTime()" class="p-2" label="Add Time" type="submit"/>
     </div>
   </p-dialog>
