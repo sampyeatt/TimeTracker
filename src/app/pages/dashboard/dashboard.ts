@@ -42,7 +42,6 @@ export class DashboardComponent implements OnInit {
                     if (!user) return
                     this.timeService.getTimeUserId(user.userId).then((res) => {
                         this.dialogService.times.set(res)
-                        this.cdref.markForCheck()
                         return true
                     })
                 }
@@ -50,7 +49,6 @@ export class DashboardComponent implements OnInit {
         } else {
             this.timeService.getTimeUserId(user.userId).then((res) => {
                 this.dialogService.times.set(res)
-                this.cdref.markForCheck()
                 return true
             })
         }
@@ -74,15 +72,19 @@ export class DashboardComponent implements OnInit {
                     this.timeService.getTimeTimeId(timeId).then((res) => {
                         if (res) {
                             this.dialogService.times()[runningTimeIndex] = res
-                            this.cdref.markForCheck()
+                            this.timeService.startTime(timeId, 1).then((res) => {
+                                if (res) this.getTime()
+                            })
                         }
                     })
                 })
+        } else {
+            //Start time
+            this.timeService.startTime(timeId, 1).then((res) => {
+                if (res) this.getTime()
+            })
         }
-        //Start time
-        this.timeService.startTime(timeId, 1).then((res) => {
-            if (res) this.getTime()
-        })
+        this.cdref.markForCheck()
     }
 
     /**
@@ -98,6 +100,7 @@ export class DashboardComponent implements OnInit {
         this.timeService.stopTime(user?.userId, totalTime, currentTime, timeId).then(() => {
             this.getTime()
         })
+        this.cdref.markForCheck()
     }
 
     /**
