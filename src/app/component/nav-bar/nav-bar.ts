@@ -54,7 +54,6 @@ export class NavBarComponent {
                     this.timeService.getTimeUserId(user.userId).then((res) => {
                         console.log('data', res)
                         this.dialogService.times.set(res)
-                        this.cdref.markForCheck()
                         return true
                     })
                 }
@@ -63,7 +62,6 @@ export class NavBarComponent {
             this.timeService.getTimeUserId(user.userId).then((res) => {
                 console.log('data', res)
                 this.dialogService.times.set(res)
-                this.cdref.markForCheck()
                 return true
             })
         }
@@ -174,6 +172,7 @@ export class NavBarComponent {
     deleteTimes(time: Time) {
         this.timeService.deleteTime(time.id).then(() => {
             this.getTime()
+            this.cdref.markForCheck()
         })
     }
 
