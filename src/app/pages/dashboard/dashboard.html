@@ -5,16 +5,22 @@
         <div class="grid grid-cols-4 gap-1">
           @for (t of this.dialogService.times(); track t.id) {
             <div class="p-2">
-              @if (!t.running) {
-                <p-button outlined (onClick)="this.startTime(t.id)" pRipple rounded>
-                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
-                </p-button>
-              }
-              @if (t.running) {
-                <p-button raised (onClick)="this.stopTime(t.id, t.total_time, t.current_time)" pRipple rounded>
-                  <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
-                </p-button>
-              }
+                @if (t.id > 0) {
+                    @if (!t.running) {
+                        <p-button outlined (onClick)="this.startTime(t.id)" pRipple rounded styleClass="w-30! h-16.5!">
+                            <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
+                        </p-button>
+                    } @else if (t.running) {
+                        <p-button raised (onClick)="this.stopTime(t.id, t.total_time, t.current_time)" pRipple rounded styleClass="w-30! h-16.5!">
+                            <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
+                        </p-button>
+                    }
+                } @else if ( t.id <= 0) {
+                    <p-button outlined rounded severity="contrast" styleClass="w-30! h-16.5!" [disabled]="true">
+                        <p>{{ t.key }}</p>
+                    </p-button>
+                }
+
             </div>
           }
         </div>

@@ -30,6 +30,7 @@ export class NavBarComponent {
     invalidKey: boolean = false
     key: string = ''
     keyDisp: string = ''
+    keycode: number | undefined
     endOfDayTimes: Time[] = []
     endOfDayTimesTotal: number = 0
 
@@ -37,14 +38,14 @@ export class NavBarComponent {
      * Getter to check if user is authenticated.
      * @returns boolean - true if user is authenticated, false otherwise
      */
-    get authenticated() {
+    get authenticated () {
         return !!this.authService.currentUser()
     }
 
     /**
      * Get all times for the current user. If the user is not authenticated, get the user from the database and set the user in the auth service.
      */
-    getTime() {
+    getTime () {
         const user = this.authService.currentUser()
         if (!user) {
             this.authService.setCurrentUser().then((auth) => {
@@ -52,15 +53,13 @@ export class NavBarComponent {
                     const user = this.authService.currentUser()
                     if (!user) return
                     this.timeService.getTimeUserId(user.userId).then((res) => {
-                        this.dialogService.times.set(res)
-                        return true
+                        this.dialogService.setTimes(res, user.userId)
                     })
                 }
             })
         } else {
             this.timeService.getTimeUserId(user.userId).then((res) => {
-                this.dialogService.times.set(res)
-                return true
+                this.dialogService.setTimes(res, user.userId)
             })
         }
     }
@@ -68,23 +67,23 @@ export class NavBarComponent {
     /**
      * trigger to show dialog window
      */
-    showDialog() {
+    showDialog () {
         this.dialogService.newTimeDialog = true
         if (this.dialogService.timeKeys().size === 0) {
             this.dialogService.times().map((time) => {
-                if (!this.dialogService.timeKeys().has(time.key)) {
+                if (!this.dialogService.timeKeys().has(time.key) && time.id > 0) {
                     this.dialogService.timeKeys().add(time.key)
                 }
             })
         }
-        console.log(this.dialogService.timeKeys())
     }
 
     /**
      * Get the keyboard input and check if it is a valid key.
      * @param event - keyboard event
      */
-    getKeyboardInput(event: KeyboardEvent) {
+    getKeyboardInput (event: KeyboardEvent) {
+        console.log(event)
         if (event instanceof KeyboardEvent && this.dialogService.timeKeys().has(event.code)) {
             this.invalidKey = true
             this.cdref.markForCheck()
@@ -93,6 +92,7 @@ export class NavBarComponent {
             this.invalidKey = false
             this.key = event.code
             this.keyDisp = event.code
+            this.keycode = this.dialogService.availableKeys.get(this.key)
             this.cdref.markForCheck()
         }
     }
@@ -100,31 +100,32 @@ export class NavBarComponent {
     /**
      * Add a new time entry to the database.
      */
-    newTime() {
+    newTime () {
         const user = this.authService.currentUser()
         if (!user) return
         console.log(this.clientName + ' ' + this.key)
-        this.timeService.newTime(user.userId, this.clientName, this.key).then((res) => {
-            if (res && res.lastInsertId !== undefined) {
-                this.timeService.getTimeTimeId(res.lastInsertId).then((res) => {
-                    if (res) {
-                        this.dialogService.times().push(res)
-                        this.dialogService.times().sort((a, b) => a.order_index - b.order_index)
-                        this.dialogService.timeKeys().add(this.key)
-                        this.clientName = ''
-                        this.key = ''
-                        this.keyDisp = ''
-                        this.cdref.markForCheck()
-                    }
-                })
-            }
-        })
+        if (!this.invalidKey && this.keycode != undefined) {
+            this.timeService.newTime(user.userId, this.clientName, this.key, this.keycode).then((res) => {
+                if (res && res.lastInsertId !== undefined) {
+                    this.timeService.getTimeTimeId(res.lastInsertId).then((res) => {
+                        if (res) {
+                            this.dialogService.times()[res.order_index - 1] = res
+                            this.dialogService.timeKeys().add(this.key)
+                            this.clientName = ''
+                            this.key = ''
+                            this.keyDisp = ''
+                            this.cdref.markForCheck()
+                        }
+                    })
+                }
+            })
+        }
     }
 
     /**
      * End the day by stopping all running time entries and calculating the total time for the day.
      */
-    endDay() {
+    endDay () {
         const user = this.authService.currentUser()
         if (!user) return
         const times = this.dialogService.times().filter((time) => time.running === 1)
@@ -144,7 +145,7 @@ export class NavBarComponent {
      * The total time is then added to the endOfDayTimes array and the total time for the day is calculated by summing up all the values in the endOfDayTimes array.
      * The total time for the day is then displayed in the end day dialog window.
      */
-    calculateEndOfDayTotals() {
+    calculateEndOfDayTotals () {
         this.getTime()
         this.endOfDayTimes = this.dialogService.times().filter((time) => time.total_time - 300000 > 0)
         this.endOfDayTimesTotal = this.endOfDayTimes
@@ -152,7 +153,6 @@ export class NavBarComponent {
                 return (Math.ceil(((value.total_time - 300000) / (1000 * 60 * 60)) * 2) / 2).toFixed(2)
             })
             .reduce((a, b) => parseFloat(a.toString()) + parseFloat(b.toString()), 0)
-        console.log(this.endOfDayTimesTotal)
         this.dialogService.endDayDialog = true
         this.cdref.markForCheck()
     }
@@ -160,7 +160,7 @@ export class NavBarComponent {
     /**
      * Reset all time entries for the current user.
      */
-    resetTimes() {
+    resetTimes () {
         const user = this.authService.currentUser()
         if (!user) return
         this.timeService.resetAllTime(user.userId).then(() => {
@@ -174,7 +174,7 @@ export class NavBarComponent {
      * Delete a time entry from the database.
      * @param time - time entry to be deleted
      */
-    deleteTimes(time: Time) {
+    deleteTimes (time: Time) {
         this.timeService.deleteTime(time.id).then(() => {
             this.dialogService.timeKeys().delete(time.key)
             this.getTime()

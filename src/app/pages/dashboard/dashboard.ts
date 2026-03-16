@@ -16,7 +16,7 @@ import { PrimeTemplate } from 'primeng/api'
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent {
     private timeService = inject(TimeService)
     private authService = inject(AuthService)
     public dialogService = inject(DialogService)
@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
     /**
      * On Init get all times for the current user
      */
-    ngOnInit() {
+    constructor () {
         this.getTime()
         this.cdref.markForCheck()
     }
@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit {
     /**
      * Get all times for the current user. If the user is not authenticated, get the user from the database and set the user in the auth service.
      */
-    getTime() {
+    getTime () {
         const user = this.authService.currentUser()
         if (!user) {
             this.authService.setCurrentUser().then((auth) => {
@@ -41,15 +41,13 @@ export class DashboardComponent implements OnInit {
                     const user = this.authService.currentUser()
                     if (!user) return
                     this.timeService.getTimeUserId(user.userId).then((res) => {
-                        this.dialogService.times.set(res)
-                        return true
+                        this.dialogService.setTimes(res, user.userId)
                     })
                 }
             })
         } else {
             this.timeService.getTimeUserId(user.userId).then((res) => {
-                this.dialogService.times.set(res)
-                return true
+                this.dialogService.setTimes(res, user.userId)
             })
         }
     }
@@ -59,7 +57,7 @@ export class DashboardComponent implements OnInit {
      * If a time entry is currently running, stop the currently running time entry and set the running flag to 0 for the new time entry.
      * @param timeId - time id number
      */
-    startTime(timeId: number) {
+    startTime (timeId: number) {
         const user = this.authService.currentUser()
         if (!user) return
         const runningTimeIndex = this.dialogService.times().findIndex((time) => time.running === 1)
@@ -94,7 +92,7 @@ export class DashboardComponent implements OnInit {
      * @param totalTime - total time in milliseconds
      * @param currentTime - current time in milliseconds
      */
-    stopTime(timeId: number, totalTime: number = 0, currentTime: number = 0) {
+    stopTime (timeId: number, totalTime: number = 0, currentTime: number = 0) {
         const user = this.authService.currentUser()
         if (!user) return
         this.timeService.stopTime(user?.userId, totalTime, currentTime, timeId).then(() => {
@@ -108,7 +106,7 @@ export class DashboardComponent implements OnInit {
      * @param event - keyboard event
      */
     @HostListener('window:keydown', ['$event'])
-    handleKeyboardEvent(event: KeyboardEvent) {
+    handleKeyboardEvent (event: KeyboardEvent) {
         if (this.dialogService.deleteDialog || this.dialogService.endDayDialog || this.dialogService.newTimeDialog)
             return
         const keyArray = this.dialogService.times().map((time) => time.key)

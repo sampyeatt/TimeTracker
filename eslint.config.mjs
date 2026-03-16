@@ -11,8 +11,6 @@
 import tseslint from 'typescript-eslint'
 import love from 'eslint-config-love'
 import stylistic from '@stylistic/eslint-plugin'
-import prettierConfig from 'eslint-config-prettier'
-import prettierPlugin from 'eslint-plugin-prettier'
 import jsdoc from 'eslint-plugin-jsdoc'
 
 export default tseslint.config(
@@ -34,7 +32,6 @@ export default tseslint.config(
         plugins: {
             '@stylistic': stylistic,
             '@typescript-eslint': tseslint.plugin,
-            '@prettier': prettierPlugin,
             'jsdoc': jsdoc
         },
         languageOptions: {
@@ -88,18 +85,6 @@ export default tseslint.config(
             '@stylistic/function-call-spacing': ['error', 'never'],
             '@stylistic/space-before-function-paren': ['error', 'always'],
             '@stylistic/space-in-parens': ['error', 'never'],
-            '@prettier/prettier': ['error', {
-                singleQuote: true,
-                tabWidth: 4,
-                semi: false,
-                arrowParens: 'always',
-                bracketSameLine: true,
-                endOfLine: 'lf',
-                proseWrap: 'preserve',
-                printWidth: 120,
-                quoteProps: 'as-needed',
-                trailingComma: 'none'
-            }],
             'jsdoc/require-jsdoc': ['error', {
                 checkAllFunctionExpressions: true,
                 contexts: ['FunctionDeclaration', 'MethodDefinition', 'ClassDeclaration', 'TSDeclareFunction'],
@@ -129,7 +114,6 @@ export default tseslint.config(
             }],
             'jsdoc/check-param-names': 'error',
         }
-    },
-    prettierConfig
+    }
 );
 

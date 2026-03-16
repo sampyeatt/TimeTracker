@@ -15,14 +15,14 @@ export class TimeService {
     /**
      * Constructor to initialize database connection
      */
-    constructor() {
+    constructor () {
         this.initDB()
     }
 
     /**
      * Initialize database connection
      */
-    private async initDB() {
+    private async initDB () {
         this.db = await Database.load('sqlite:timetracker-v1.db')
     }
 
@@ -31,7 +31,7 @@ export class TimeService {
      * @param userId - user id number
      * @returns Time[] - array of time data
      */
-    async getTimeUserId(userId: number) {
+    async getTimeUserId (userId: number) {
         if (this.db) {
             return await this.db.select<Time[]>(
                 `SELECT *, TRIM(key, 'F') as trim
@@ -49,7 +49,7 @@ export class TimeService {
      * @param id - time id number
      * @returns Time - time data
      */
-    async getTimeTimeId(id: number) {
+    async getTimeTimeId (id: number) {
         if (this.db) {
             const time = await this.db.select<Time[]>(
                 `SELECT *
@@ -67,14 +67,14 @@ export class TimeService {
      * @param userId - user id number
      * @param clientName - name of the client
      * @param key - key pressed to start the time entry
+     * @param keyCode code for key
      * @returns QueryResult - result of the insert operation
      */
-    async newTime(userId: number, clientName: string, key: string) {
+    async newTime (userId: number, clientName: string, key: string, keyCode: number) {
         if (this.db) {
-            const orderIndex = +key.replace('F', '')
             return await this.db.execute(
                 'INSERT INTO times (client_name, key, userId, total_time, order_index) VALUES ($1, $2, $3, $4, $5)',
-                [clientName, key, userId, 0, orderIndex]
+                [clientName, key, userId, 0, keyCode]
             )
         }
         return null
@@ -86,7 +86,7 @@ export class TimeService {
      * @param running - running flag. 1 for running, 0 for stopped
      * @returns QueryResult - result of the update operation
      */
-    async startTime(id: number, running: number) {
+    async startTime (id: number, running: number) {
         if (this.db) {
             const date = Date.now()
             return await this.db.execute('UPDATE times SET current_time = $1, running = $2 WHERE id = $3', [
@@ -105,7 +105,7 @@ export class TimeService {
      * @param currentTime - current time in milliseconds.
      * @param timeId - time id number
      */
-    async stopTime(userId: number, totalTime: number = 0, currentTime: number = 0, timeId: number) {
+    async stopTime (userId: number, totalTime: number = 0, currentTime: number = 0, timeId: number) {
         if (this.db) {
             const date = Date.now()
             await this.db.execute(
@@ -119,7 +119,7 @@ export class TimeService {
      * Reset all times for a given user. This will set the running flag to 0, the current time to 0 and the total time to 0.
      * @param userId - user id number
      */
-    async resetAllTime(userId: number) {
+    async resetAllTime (userId: number) {
         if (this.db) {
             await this.db.execute('UPDATE times SET running = 0, current_time = 0, total_time = 0 WHERE userId = $1', [
                 userId
@@ -131,7 +131,7 @@ export class TimeService {
      * Delete a time entry for a given time id
      * @param id - time id number
      */
-    async deleteTime(id: number) {
+    async deleteTime (id: number) {
         if (this.db) {
             await this.db.execute('DELETE FROM times WHERE id = $1', [id])
         }
