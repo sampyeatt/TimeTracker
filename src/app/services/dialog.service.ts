@@ -37,7 +37,6 @@ export class DialogService {
      * @param userid user id
      */
     constructBlankArray (userid: number) {
-        console.log('KEYS AVAIL', this.timeKeys())
         for (const [k, v] of this.availableKeys) {
             if (!this.timeKeys().has(k)) {
                 this.times().push({
@@ -53,7 +52,6 @@ export class DialogService {
             }
         }
         this.times().sort((a, b) => a.order_index - b.order_index)
-        console.log('times', this.times())
     }
 
     /**
