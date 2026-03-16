@@ -1,8 +1,8 @@
-<div class="flex justify-center p-2">
+<div class="flex justify-center p-2 bg-zinc-900">
   @if (this.dialogService.times().length > 0) {
     <p-dataView #dv [value]="this.dialogService.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="">
       <ng-template #grid let-time pTemplate="gridItem">
-        <div class="grid grid-cols-4 gap-1">
+        <div class="grid grid-cols-4 gap-1 ">
           @for (t of this.dialogService.times(); track t.id) {
             <div class="p-2">
                 @if (t.id > 0) {

@@ -52,13 +52,13 @@
     </div>
             <div class="p-1">
       <p-button (onClick)="this.dialogService.deleteDialog = true" pRipple severity="danger"><i class="pi pi-trash"></i> Delete Times</p-button>
-      <p-dialog [(visible)]="this.dialogService.deleteDialog" [modal]="true" [style]="{ width: '50rem' }" header="End Day">
+      <p-dialog [(visible)]="this.dialogService.deleteDialog" [modal]="true" [style]="{ width: '35rem' }" header="End Day">
         <div class="p-3">
-          <p-table [tableStyle]="{ 'min-width': '50rem' }" [value]="this.dialogService.times()">
+          <p-table [tableStyle]="{ 'min-width': '30rem' }" [value]="this.dialogService.times()">
             <ng-template #body let-editing="editing" let-time>
               @if (time.id > 0) {
                   <tr [pEditableRow]="time">
-                    <td style="width:20%">{{ time.client_name }}</td>
+                    <td>{{ time.client_name }}</td>
                     <td>{{ (Math.ceil((time.total_time / (1000 * 60 * 60)) * 2) / 2).toFixed(2) }}</td>
                     <td>
                       <p-button (onClick)="this.deleteTimes(time)" pCancelEditableRow rounded severity="warn" text type="button">
