@@ -214,6 +214,7 @@ export class NavBarComponent {
      * @param time time
      */
     updateTimes (time: Time) {
+        console.log('Time:', time)
         const newOrderIndex = this.dialogService.availableKeys.get(time.key)
         if (newOrderIndex !== undefined) {
             time.order_index = newOrderIndex
