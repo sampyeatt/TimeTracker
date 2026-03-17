@@ -136,4 +136,14 @@ export class TimeService {
             await this.db.execute('DELETE FROM times WHERE id = $1', [id])
         }
     }
+
+    /**
+     * update time
+     * @param time time element
+     */
+    async updateTime (time: Time) {
+        if (this.db) {
+            await this.db.execute(`UPDATE times SET client_name = $1, key = $2, order_index = $3 WHERE id = $4`, [time.client_name, time.key, time.order_index, time.id])
+        }
+    }
 }

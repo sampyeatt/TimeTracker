@@ -98,6 +98,33 @@ export class NavBarComponent {
     }
 
     /**
+     * Get the keyboard input and check if it is a valid key.
+     * @param event - keyboard event
+     * @param index index
+     */
+    getKeyboardInputUpdate (event: KeyboardEvent, index: number) {
+        if (event instanceof KeyboardEvent && this.dialogService.timeKeys().has(event.code)) {
+            this.invalidKey = true
+            this.dialogService.timeKeys().clear()
+            this.dialogService.times().map((time) => {
+                if (time.id > 0) this.dialogService.timeKeys().add(time.key)
+            })
+            this.cdref.markForCheck()
+            return
+        } else {
+            this.invalidKey = false
+            this.dialogService.timeKeys().clear()
+            console.log('d', this.dialogService.times().at(index-1))
+            // @ts-ignore
+            this.dialogService.times().at(index).key = event.code
+            this.dialogService.times().map((time) => {
+                if (time.id > 0) this.dialogService.timeKeys().add(time.key)
+            })
+            this.cdref.markForCheck()
+        }
+    }
+
+    /**
      * Add a new time entry to the database.
      */
     newTime () {
@@ -180,6 +207,31 @@ export class NavBarComponent {
             this.getTime()
             this.cdref.markForCheck()
         })
+    }
+
+    /**
+     * Update time
+     * @param time time
+     */
+    updateTimes (time: Time) {
+        const newOrderIndex = this.dialogService.availableKeys.get(time.key)
+        if (newOrderIndex !== undefined) {
+            time.order_index = newOrderIndex
+            this.timeService.updateTime(time).then(r => {
+                this.getTime()
+                this.cdref.markForCheck()
+            })
+        }
+    }
+
+    /**
+     * cancel changes
+     * @param time time
+     */
+    cancelChanges (time: Time) {
+        this.dialogService.timeKeys().delete(time.key)
+        this.getTime()
+        this.cdref.markForCheck()
     }
 
     protected readonly Math = Math
