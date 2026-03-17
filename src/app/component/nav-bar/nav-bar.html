@@ -3,7 +3,7 @@
     @if (this.authenticated) {
         <span class="flex justify-center text-xl font-semibold">
     <div class="p-1">
-      <p-button (onClick)="this.showDialog()" class="w-full max-w-[17.35rem]" pRipple><i class="pi pi-plus"></i> New Client</p-button>
+      <p-button (onClick)="this.showDialog()" class="w-full max-w-[17.35rem]"><i class="pi pi-plus"></i> New Client</p-button>
       <p-dialog [(visible)]="this.dialogService.newTimeDialog" [modal]="true" [style]="{ width: '25rem' }"
                 header="New Time">
         <div class="p-3">
@@ -31,7 +31,7 @@
   </p-dialog>
 </div>
             <div class="p-1">
-      <p-button (onClick)="this.endDay()" pRipple severity="warn"><i class="pi pi-clock"></i> End Day</p-button>
+      <p-button (onClick)="this.endDay()" severity="warn"><i class="pi pi-clock"></i> End Day</p-button>
       <p-dialog [(visible)]="this.dialogService.endDayDialog" [modal]="true" [style]="{ width: '40rem' }"
                 header="End Day">
           <div class="flex justify-center">
@@ -59,7 +59,7 @@
       </p-dialog>
     </div>
             <div class="p-1">
-      <p-button (onClick)="this.dialogService.deleteDialog = true" pRipple severity="danger"><i class="pi pi-trash"></i> Edit Times</p-button>
+      <p-button (onClick)="this.dialogService.deleteDialog = true" severity="danger"><i class="pi pi-trash"></i> Edit Times</p-button>
       <p-dialog [(visible)]="this.dialogService.deleteDialog" [modal]="true" [style]="{ width: '35rem' }"
                 header="End Day">
         <div class="p-3">

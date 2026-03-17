@@ -4,7 +4,6 @@ import { AuthService } from '../../services/auth.service'
 import { DialogService } from '../../services/dialog.service'
 import { Button } from 'primeng/button'
 import { DataView } from 'primeng/dataview'
-import { Ripple } from 'primeng/ripple'
 import { PrimeTemplate } from 'primeng/api'
 
 /**
@@ -12,7 +11,7 @@ import { PrimeTemplate } from 'primeng/api'
  */
 @Component({
     selector: 'app-dashboard',
-    imports: [Button, DataView, Ripple, PrimeTemplate],
+    imports: [Button, DataView, PrimeTemplate],
     templateUrl: './dashboard.html',
     styleUrl: './dashboard.css'
 })

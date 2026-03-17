@@ -19,7 +19,7 @@ export class App implements OnInit {
     /**
      * oninit to check if user is authenticated and redirect to dashboard if so
      */
-    ngOnInit() {
+    ngOnInit () {
         console.log('App initialized')
 
         if (this.authSercices.currentUser() === undefined) {

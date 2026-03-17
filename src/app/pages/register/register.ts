@@ -26,7 +26,7 @@ export class RegisterComponent {
     /**
      * Submit form data to register a new user.
      */
-    onSubmit() {
+    onSubmit () {
         if (this.form.valid) {
             this.authService.register(this.form.value.name as string).then((r) => {
                 this.authService.setCurrentUser().then((auth) => {

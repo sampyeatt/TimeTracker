@@ -8,7 +8,6 @@ import { Dialog } from 'primeng/dialog'
 import { FloatLabel } from 'primeng/floatlabel'
 import { FormsModule } from '@angular/forms'
 import { InputText } from 'primeng/inputtext'
-import { Ripple } from 'primeng/ripple'
 import { TableModule } from 'primeng/table'
 import { RouterLink } from '@angular/router'
 
@@ -17,7 +16,7 @@ import { RouterLink } from '@angular/router'
  */
 @Component({
     selector: 'app-nav-bar',
-    imports: [Button, Dialog, FloatLabel, FormsModule, InputText, Ripple, TableModule, RouterLink],
+    imports: [Button, Dialog, FloatLabel, FormsModule, InputText, TableModule, RouterLink],
     templateUrl: './nav-bar.html',
     styleUrl: './nav-bar.css'
 })

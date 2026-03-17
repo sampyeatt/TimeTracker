@@ -3,15 +3,15 @@
     <p-dataView #dv [value]="this.dialogService.times()" layout="grid" [rows]="4" filterBy="client_name" [paginator]="false" class="">
       <ng-template #grid let-time pTemplate="gridItem">
         <div class="grid grid-cols-4 gap-1 ">
-          @for (t of this.dialogService.times(); track t.id) {
+          @for (t of time; track t.id) {
             <div class="p-2">
                 @if (t.id > 0) {
                     @if (!t.running) {
-                        <p-button outlined (onClick)="this.startTime(t.id)" pRipple rounded styleClass="w-30! h-16.5!">
+                        <p-button outlined (onClick)="this.startTime(t.id)" rounded styleClass="w-30! h-16.5!">
                             <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
                         </p-button>
                     } @else if (t.running) {
-                        <p-button raised (onClick)="this.stopTime(t.id, t.total_time, t.current_time)" pRipple rounded styleClass="w-30! h-16.5!">
+                        <p-button raised (onClick)="this.stopTime(t.id, t.total_time, t.current_time)" rounded styleClass="w-30! h-16.5!">
                             <p>{{ t.client_name }}<br>{{ (t.total_time / (1000 * 60 * 60)).toFixed(2) }} hours</p>
                         </p-button>
                     }
