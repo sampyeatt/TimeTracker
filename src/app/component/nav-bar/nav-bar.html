@@ -18,7 +18,10 @@
                   for="key">Key</label>
           </p-floatlabel>
             @if (this.invalidKey) {
-                <div class="text-red-500">That key is already in use</div>
+                <div class="text-red-600">That key is already in use</div>
+            }
+            @if (this.testEvent) {
+                <div class="text-red-800">{{ this.testEvent }}</div>
             }
     </div>
     <div class="flex justify-center p-3">

@@ -34,6 +34,8 @@ export class NavBarComponent {
     endOfDayTimes: Time[] = []
     endOfDayTimesTotal: number = 0
 
+    testEvent: string = ''
+
     /**
      * Getter to check if user is authenticated.
      * @returns boolean - true if user is authenticated, false otherwise
@@ -84,6 +86,7 @@ export class NavBarComponent {
      */
     getKeyboardInput (event: KeyboardEvent) {
         console.log(event)
+        this.testEvent = event.code
         if (event instanceof KeyboardEvent && this.dialogService.timeKeys().has(event.code)) {
             this.invalidKey = true
             this.cdref.markForCheck()
