@@ -30,12 +30,11 @@ export class NavBarComponent {
     invalidKey: boolean = false
     key: string = ''
     keyDisp: string = ''
-    keycode: number | undefined
     endOfDayTimes: Time[] = []
     endOfDayTimesTotal: number = 0
 
     /**
-     * Getter to check if user is authenticated.
+     * Getter to check if the user is authenticated.
      * @returns boolean - true if user is authenticated, false otherwise
      */
     get authenticated () {
@@ -91,7 +90,6 @@ export class NavBarComponent {
             this.invalidKey = false
             this.key = event.code
             this.keyDisp = event.code
-            this.keycode = this.dialogService.availableKeys.get(this.key)
             this.cdref.markForCheck()
         }
     }
@@ -113,7 +111,6 @@ export class NavBarComponent {
         } else {
             this.invalidKey = false
             this.dialogService.timeKeys().clear()
-            console.log('d', this.dialogService.times().at(index-1))
             // @ts-ignore
             this.dialogService.times().at(index).key = event.code
             this.dialogService.times().map((time) => {
@@ -130,8 +127,9 @@ export class NavBarComponent {
         const user = this.authService.currentUser()
         if (!user) return
         console.log(this.clientName + ' ' + this.key)
-        if (!this.invalidKey && this.keycode != undefined) {
-            this.timeService.newTime(user.userId, this.clientName, this.key, this.keycode).then((res) => {
+        const keycode = this.dialogService.availableKeys.get(this.key)
+        if (!this.invalidKey && keycode != undefined) {
+            this.timeService.newTime(user.userId, this.clientName, this.key, keycode).then((res) => {
                 if (res && res.lastInsertId !== undefined) {
                     this.timeService.getTimeTimeId(res.lastInsertId).then((res) => {
                         if (res) {
@@ -157,12 +155,25 @@ export class NavBarComponent {
         const times = this.dialogService.times().filter((time) => time.running === 1)
         if (times.length === 0) {
             this.calculateEndOfDayTotals()
-        }
-        times.forEach((time) => {
-            this.timeService.stopTime(user.userId, time.total_time, time.current_time, time.id).then(() => {
-                this.calculateEndOfDayTotals()
+        } else {
+            const date = Date.now()
+            times.forEach((time) => {
+                const updatedTotalTime = time.total_time + (date - time.current_time)
+                this.timeService.stopTime(user.userId, updatedTotalTime, time.id).then((res) => {
+                    if (res) {
+                        const timeIndex = this.dialogService.times().findIndex(value => value.id === time.id)
+                        if (timeIndex != -1) {
+                            // @ts-ignore the index exists so the value exists
+                            this.dialogService.times().at(timeIndex).running = 0
+                            // @ts-ignore the index exists so the value exists
+                            this.dialogService.times().at(timeIndex).total_time = updatedTotalTime
+                            this.cdref.markForCheck()
+                        }
+                    }
+                    this.calculateEndOfDayTotals()
+                })
             })
-        })
+        }
     }
 
     /**
@@ -172,7 +183,6 @@ export class NavBarComponent {
      * The total time for the day is then displayed in the end day dialog window.
      */
     calculateEndOfDayTotals () {
-        this.getTime()
         this.endOfDayTimes = this.dialogService.times().filter((time) => time.total_time - 300000 > 0)
         this.endOfDayTimesTotal = this.endOfDayTimes
             .map((value) => {

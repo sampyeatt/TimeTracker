@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, inject, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, HostListener, inject } from '@angular/core'
 import { TimeService } from '../../services/time.service'
 import { AuthService } from '../../services/auth.service'
 import { DialogService } from '../../services/dialog.service'
@@ -63,26 +63,32 @@ export class DashboardComponent {
         const runningTimeIndex = this.dialogService.times().findIndex((time) => time.running === 1)
         const runningTime = this.dialogService.times()[runningTimeIndex]
         if (runningTimeIndex !== -1) {
-            // Stop currently running time
-            this.timeService
-                .stopTime(user.userId, runningTime.total_time, runningTime.current_time, runningTime.id)
-                .then(() => {
-                    this.timeService.getTimeTimeId(timeId).then((res) => {
-                        if (res) {
-                            this.dialogService.times()[runningTimeIndex] = res
-                            this.timeService.startTime(timeId, 1).then((res) => {
-                                if (res) this.getTime()
-                            })
-                        }
-                    })
-                })
+            this.stopTime(runningTime.id, runningTime.total_time, runningTime.current_time)
+            this.startUpdateTime(timeId)
         } else {
-            //Start time
-            this.timeService.startTime(timeId, 1).then((res) => {
-                if (res) this.getTime()
-            })
+            this.startUpdateTime(timeId)
         }
-        this.cdref.markForCheck()
+    }
+
+    /**
+     * Start a time entry for a given time id. This will set the running flag to 1 for the time entry.
+     * If a time entry is currently running, stop the currently running time entry and set the running flag to 0 for the new time entry.
+     * @param timeId - time id number
+     */
+    startUpdateTime (timeId: number) {
+        const date = Date.now()
+        this.timeService.startTime(timeId, 1, date).then((res) => {
+            if (res) {
+                const timeIndex = this.dialogService.times().findIndex(value => value.id === timeId)
+                if (timeIndex != -1) {
+                    // @ts-ignore the index exists so the value exists
+                    this.dialogService.times().at(timeIndex).running = 1
+                    // @ts-ignore the index exists so the value exists
+                    this.dialogService.times().at(timeIndex).current_time = date
+                    this.cdref.markForCheck()
+                }
+            }
+        })
     }
 
     /**
@@ -95,10 +101,20 @@ export class DashboardComponent {
     stopTime (timeId: number, totalTime: number = 0, currentTime: number = 0) {
         const user = this.authService.currentUser()
         if (!user) return
-        this.timeService.stopTime(user?.userId, totalTime, currentTime, timeId).then(() => {
-            this.getTime()
+        const date = Date.now()
+        const updatedTotalTime = totalTime + (date - currentTime)
+        this.timeService.stopTime(user?.userId, updatedTotalTime, timeId).then((res) => {
+            if (res) {
+                const timeIndex = this.dialogService.times().findIndex(value => value.id === timeId)
+                if (timeIndex != -1) {
+                    // @ts-ignore the index exists so the value exists
+                    this.dialogService.times().at(timeIndex).running = 0
+                    // @ts-ignore the index exists so the value exists
+                    this.dialogService.times().at(timeIndex).total_time = updatedTotalTime
+                    this.cdref.markForCheck()
+                }
+            }
         })
-        this.cdref.markForCheck()
     }
 
     /**
@@ -109,8 +125,7 @@ export class DashboardComponent {
     handleKeyboardEvent (event: KeyboardEvent) {
         if (this.dialogService.deleteDialog || this.dialogService.endDayDialog || this.dialogService.newTimeDialog)
             return
-        const keyArray = this.dialogService.times().map((time) => time.key)
-        if (event instanceof KeyboardEvent && keyArray.includes(event.code)) {
+        if (event instanceof KeyboardEvent && this.dialogService.timeKeys().has(event.code)) {
             const time = this.dialogService.times().find((time) => time.key === event.code)
             if (!time) return
             if (time.running === 1) this.stopTime(time.id, time.total_time, time.current_time)
